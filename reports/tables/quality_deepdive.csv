@@ -1,0 +1,6 @@
+anomalia,n_filas,hallazgo,lectura,propuesta
+"months_number fuera de [1,12]",24043,1357 valores distintos por encima de 12; el tramo >1000 no admite lectura como período de facturación,captura defectuosa en la mayoría; 13-24 puede ser regularización real,"marcar, no imputar; estudiar la bandera como variable en fase 3"
+counter_statue / reading_remarque fuera de dominio,81,los valores extraños de reading_remarque son códigos válidos de counter_code,filas con columnas corridas en la captura original,"marcar; volumen marginal, sin efecto sobre agregados por cliente"
+duplicados por clave lógica,29278,17768 de 18363 grupos difieren en consumo o índices,no son copias: son líneas distintas del mismo documento o refacturaciones,conservar; eliminarlas borraría consumo real
+counter_number compartido entre clientes,43161,"20366 valores en más de un cliente, hasta 5149",no es un identificador de equipo,"usarlo solo como conteo por cliente, nunca como clave de contador"
+primera factura anterior al alta,8748,"adelanto mediano de 75 días, máximo 322",creation_date no es el inicio del historial para estos clientes,"antigüedad medida desde la primera factura, no desde creation_date"

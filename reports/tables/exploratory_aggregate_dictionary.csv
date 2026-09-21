@@ -1,0 +1,35 @@
+variable,dtype,n_faltantes,descripcion
+exp_n_invoices,int64,0,facturas del cliente
+exp_n_counters,int64,0,valores distintos de counter_number
+exp_n_counter_types,int64,0,"tipos de contador (ELEC, GAZ)"
+exp_n_tarif_types,int64,0,tipos de tarifa distintos
+exp_n_counter_codes,int64,0,valores distintos de counter_code
+exp_cons_total_median,float64,0,mediana del consumo total por factura
+exp_cons_total_mean,float64,0,media del consumo total por factura
+exp_cons_total_max,int64,0,consumo máximo en una factura
+exp_cons_total_std,float64,4212,desviación del consumo entre facturas
+exp_cons1_median,float64,0,mediana del consumo de nivel 1
+exp_cons2_mean,float64,0,media del consumo de nivel 2
+exp_cons3_mean,float64,0,media del consumo de nivel 3
+exp_cons4_mean,float64,0,media del consumo de nivel 4
+exp_delta_index_median,float64,0,mediana de new_index - old_index
+exp_new_index_max,int64,0,lectura máxima alcanzada
+exp_months_number_mean,float64,0,meses medios cubiertos por factura
+exp_gap_median_days,float64,5071,mediana de días entre lecturas del mismo contador
+exp_gap_max_days,float64,5071,máximo de días entre lecturas del mismo contador
+exp_share_cons_cero,float64,0,proporción de facturas sin consumo
+exp_share_statue_nonzero,float64,0,proporción con counter_statue distinto de 0
+exp_share_coef_gt1,float64,0,proporción con coeficiente mayor que 1
+exp_share_levels_mismatch,float64,0,proporción donde los niveles no cuadran con el índice
+exp_share_logical_duplicate,float64,0,proporción de facturas marcadas por logical_duplicate
+exp_share_counter_statue_invalid,float64,0,proporción de facturas marcadas por counter_statue_invalid
+exp_share_reading_remarque_invalid,float64,0,proporción de facturas marcadas por reading_remarque_invalid
+exp_share_months_number_invalid,float64,0,proporción de facturas marcadas por months_number_invalid
+exp_share_index_regression,float64,0,proporción de facturas marcadas por index_regression
+exp_span_days,int64,0,días entre la primera y la última factura
+exp_invoices_per_year,float64,5247,facturas por año de historial
+exp_days_since_last,int64,0,días desde la última factura hasta el cierre del panel
+exp_cv_cons,float64,6548,coeficiente de variación del consumo
+exp_antiguedad_dias,int64,0,días entre el alta declarada y la última factura
+exp_creation_year,int32,0,año de alta del cliente
+exp_counters_por_factura,float64,0,contadores distintos por factura

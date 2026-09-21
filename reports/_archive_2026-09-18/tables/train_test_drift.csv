@@ -1,0 +1,29 @@
+level,column,test,effect_size_name,effect_size,reference_name,reference,max_abs_share_diff_pp,n_categories_train,n_categories_test,p_value,n_train,n_test,n_train_used,n_test_used,unit
+factura,counter_code,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.056073,mínima celda esperada,1784.5,0.3075,42.0,39.0,0.0,4476738,1939722,4476738,1939722,14 categorías tras agrupar
+factura,new_index,KS dos muestras,D,0.009095,D crítico 5 %,0.004301,,,,1.2983665665544653e-07,4476738,1939722,200000,200000,unidades de consumo / meses
+factura,old_index,KS dos muestras,D,0.008985,D crítico 5 %,0.004301,,,,1.9327693883442825e-07,4476738,1939722,200000,200000,unidades de consumo / meses
+factura,tarif_type,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.008659,mínima celda esperada,22.07,0.123,17.0,16.0,6.615414412053266e-98,4476738,1939722,4476738,1939722,13 categorías tras agrupar
+cliente (agregado),span_years,KS dos muestras,D,0.006545,D crítico 5 %,0.006746,,,,0.06117923248066626,135493,58069,135493,58069,años
+cliente (agregado),n_invoices,KS dos muestras,D,0.005314,D crítico 5 %,0.006746,,,,0.20042133983627508,135493,58069,135493,58069,facturas
+cliente (agregado),median_gap_days_within_stream,KS dos muestras,D,0.004824,D crítico 5 %,0.006872,,,,0.3208492176084634,130422,55967,130422,55967,días
+cliente,creation_date (año),KS dos muestras,D,0.004232,D crítico 5 %,0.006746,,,,0.4592620274335787,135493,58069,135493,58069,año
+factura,logical_duplicate,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.00417,mínima celda esperada,13124.23,0.0748,2.0,2.0,2.697844680611151e-26,4476738,1939722,4476738,1939722,2 categorías tras agrupar
+cliente (agregado),invoices_per_year,KS dos muestras,D,0.004028,D crítico 5 %,0.006877,,,,0.5482054780919036,130246,55895,130246,55895,facturas/año
+factura,invoice_date (año),KS dos muestras,D,0.00371,D crítico 5 %,0.004301,,,,0.12714773341533503,4476738,1939722,200000,200000,año
+cliente (agregado),max_gap_days,KS dos muestras,D,0.003685,D crítico 5 %,0.006851,,,,0.6568518104582213,131281,56309,131281,56309,días
+factura,months_number,KS dos muestras,D,0.00303,D crítico 5 %,0.004301,,,,0.3169258028851841,4476738,1939722,200000,200000,unidades de consumo / meses
+factura,consommation_level_1,KS dos muestras,D,0.002485,D crítico 5 %,0.004301,,,,0.5664985352074139,4476738,1939722,200000,200000,unidades de consumo / meses
+factura,consommation_level_2,KS dos muestras,D,0.001765,D crítico 5 %,0.004301,,,,0.9138476918571165,4476738,1939722,200000,200000,unidades de consumo / meses
+factura,counter_statue_invalid,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.001737,mínima celda esperada,14.21,0.001,2.0,1.0,6.399823391659232e-06,4476738,1939722,4476738,1939722,2 categorías tras agrupar
+factura,counter_statue,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.001684,mínima celda esperada,0.3,0.0158,12.0,6.0,0.002118202421999037,4476738,1939722,4476738,1939722,12 categorías tras agrupar
+cliente,client_catg,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.001674,mínima celda esperada,716.4,0.1021,3.0,3.0,0.28052595852330797,135493,58069,135493,58069,3 categorías tras agrupar
+factura,reading_remarque,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.00162,mínima celda esperada,0.3,0.1123,8.0,4.0,0.00121926212360362,4476738,1939722,4476738,1939722,8 categorías tras agrupar
+factura,reading_remarque_invalid,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.001463,mínima celda esperada,10.28,0.0008,2.0,1.0,0.00012393097790076182,4476738,1939722,4476738,1939722,2 categorías tras agrupar
+factura,consommation_level_3,KS dos muestras,D,0.000915,D crítico 5 %,0.004301,,,,0.9999963655172976,4476738,1939722,200000,200000,unidades de consumo / meses
+factura,counter_type,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.000668,mínima celda esperada,604993.28,0.0783,2.0,2.0,0.04935421908831746,4476738,1939722,4476738,1939722,2 categorías tras agrupar
+factura,index_regression,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.00065,mínima celda esperada,1003.04,0.0038,2.0,2.0,0.054021210943424686,4476738,1939722,4476738,1939722,2 categorías tras agrupar
+factura,consommation_level_4,KS dos muestras,D,0.000485,D crítico 5 %,0.004301,,,,1.0,4476738,1939722,200000,200000,unidades de consumo / meses
+factura,counter_coefficient,KS dos muestras,D,0.00017,D crítico 5 %,0.004301,,,,1.0,4476738,1939722,200000,200000,unidades de consumo / meses
+factura,months_number_invalid,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.0,mínima celda esperada,10412.56,0.0009,2.0,2.0,0.8918130129714841,4476738,1939722,4476738,1939722,2 categorías tras agrupar
+cliente,region,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.0,mínima celda esperada,1649.11,0.1826,25.0,24.0,0.6577366730000842,135493,58069,135493,58069,13 categorías tras agrupar
+cliente,disrict,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.0,mínima celda esperada,12384.99,0.2189,4.0,4.0,0.7287375211814495,135493,58069,135493,58069,4 categorías tras agrupar

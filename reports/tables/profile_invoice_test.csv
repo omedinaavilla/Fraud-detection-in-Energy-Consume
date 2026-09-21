@@ -1,0 +1,17 @@
+table,column,dtype,n_missing,pct_missing,n_unique,is_constant,min,p01,p25,median,p75,p99,max,mean,std,top_value,top_value_freq
+invoice_test,client_id,string,0,0.0,58069,False,,,,,,,,,,test_Client_16084,412.0
+invoice_test,invoice_date,datetime64[ns],0,0.0,6934,False,1977-07-13 00:00:00,,,,,,2019-12-07 00:00:00,,,,
+invoice_test,tarif_type,int64,0,0.0,16,False,8.0,10.0,11.0,11.0,40.0,40.0,45.0,20.11711320647719,13.46528047133372,,
+invoice_test,counter_number,int64,0,0.0,91966,False,0.0,88.0,120990.0,494300.0,1104817.0,2165704218800.0,27873400010939.0,125049938040.47966,1675263863959.6946,,
+invoice_test,counter_statue,string,0,0.0,6,False,,,,,,,,,,0,1897688.0
+invoice_test,counter_code,int64,0,0.0,39,False,5.0,5.0,5.0,203.0,207.0,442.0,600.0,173.3741768184232,134.6030022393852,,
+invoice_test,reading_remarque,int64,0,0.0,4,False,6.0,6.0,6.0,8.0,9.0,9.0,9.0,7.3218984085413945,1.3598394850221842,,
+invoice_test,counter_coefficient,int64,0,0.0,7,False,0.0,1.0,1.0,1.0,1.0,1.0,21.0,1.000459857815263,0.029739673701326578,,
+invoice_test,consommation_level_1,int64,0,0.0,6546,False,0.0,0.0,80.0,277.0,603.0,2265.7099999999627,110858.0,414.6279219272785,603.5931109886867,,
+invoice_test,consommation_level_2,int64,0,0.0,9700,False,0.0,0.0,0.0,0.0,0.0,2198.0,309039.0,116.59415537213943,1087.4673144097046,,
+invoice_test,consommation_level_3,int64,0,0.0,1862,False,0.0,0.0,0.0,0.0,0.0,800.0,71670.0,21.5488944337614,235.24509693469568,,
+invoice_test,consommation_level_4,int64,0,0.0,8838,False,0.0,0.0,0.0,0.0,0.0,1265.0,300934.0,57.153597150118834,935.2610173311199,,
+invoice_test,old_index,int64,0,0.0,116512,False,0.0,0.0,1814.0,7819.0,22120.0,157395.83999999985,3039577.0,18230.8330881102,43485.383456500196,,
+invoice_test,new_index,int64,0,0.0,118365,False,0.0,0.0,2083.0,8326.0,22814.0,163720.70999999996,3066673.0,18891.33462079774,44640.88988527293,,
+invoice_test,months_number,int64,0,0.0,914,False,0.0,1.0,4.0,4.0,4.0,12.0,990688.0,117.12882875451739,7834.547851079163,,
+invoice_test,counter_type,string,0,0.0,2,False,,,,,,,,,,ELEC,1335794.0

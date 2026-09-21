@@ -1,0 +1,15 @@
+table,column,n_unique_original,rare_grouped,value,n,pct
+client_train,disrict,4,False,62,40353,29.7824
+client_train,disrict,4,False,69,34231,25.264
+client_train,disrict,4,False,60,31922,23.5599
+client_train,disrict,4,False,63,28987,21.3937
+client_train,client_catg,3,False,11,131494,97.0486
+client_train,client_catg,3,False,12,2321,1.713
+client_train,client_catg,3,False,51,1678,1.2384
+client_train,region,25,True,otras,47946,35.3863
+client_train,region,25,True,101,33770,24.9238
+client_train,region,25,True,104,12865,9.495
+client_train,region,25,True,311,12406,9.1562
+client_train,region,25,True,107,9998,7.379
+client_train,region,25,True,301,9544,7.0439
+client_train,region,25,True,103,8964,6.6158

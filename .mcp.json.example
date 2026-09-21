@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "plane": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "plane-mcp-server",
+        "stdio"
+      ],
+      "env": {
+        "PLANE_API_KEY": "<tu-plane-api-key>",
+        "PLANE_WORKSPACE_SLUG": "<tu-workspace-slug>",
+        "PLANE_BASE_URL": "https://api.plane.so"
+      }
+    }
+  }
+}

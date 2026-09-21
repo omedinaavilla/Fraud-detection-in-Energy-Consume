@@ -1,0 +1,10 @@
+var_a,var_b,spearman
+exp_cons_l2_mean,exp_rate_above_level_1,0.9783394441975696
+exp_cons_total_mean,exp_index_delta_mean,0.9538967520130669
+exp_cons_total_std,exp_cons_total_max,0.9446664462904546
+exp_n_tarif_types,exp_n_counter_codes,0.9389400325363402
+exp_cons_total_mean,exp_cons_l1_mean,0.9358196119261397
+exp_n_tarif_types,exp_n_counter_types,0.9332660821770331
+exp_prop_gaz,exp_n_counter_types,0.925917450391548
+exp_n_counter_codes,exp_n_counter_types,0.9167395365616934
+exp_rate_counter_statue_invalid,exp_rate_reading_remarque_invalid,0.9128716029358703

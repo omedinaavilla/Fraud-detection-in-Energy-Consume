@@ -1,0 +1,5 @@
+metrica,valor_clasificador_trivial,unidad,nota
+exactitud (accuracy),94.42,%,predecir 'no fraude' a todo el mundo
+ROC-AUC,50.0,%,no depende de la prevalencia
+PR-AUC (average precision),5.58,%,su línea base es la prevalencia
+"F1 con umbral 0,5",0.0,%,"sin positivos predichos, F1 es 0"

@@ -1,0 +1,8 @@
+medida,valor
+clientes con una sola factura,4212.0
+clientes con tres o menos,15269.0
+mediana de facturas por cliente,30.0
+máximo de facturas de un cliente,439.0
+clientes con dos tipos de contador,61376.0
+clientes con primera factura anterior al alta,8748.0
+mediana del intervalo entre lecturas del mismo contador (días),121.0

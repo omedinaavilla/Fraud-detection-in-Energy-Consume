@@ -1,0 +1,55 @@
+# Datos: propiedad de STEG/Zindi, no se redistribuyen. Solo el diccionario y el
+# marcador de carpeta quedan versionados; los CSV y los derivados nunca.
+data/*
+!data/raw/
+data/raw/*
+!data/raw/README.md
+!data/raw/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+build/
+dist/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Artefactos intermedios que se regeneran desde el pipeline
+*.parquet
+
+# LaTeX
+paper/**/*.aux
+paper/**/*.log
+paper/**/*.out
+paper/**/*.toc
+paper/**/*.bbl
+paper/**/*.blg
+paper/**/*.synctex.gz
+paper/**/*.fdb_latexmk
+paper/**/*.fls
+
+# SO / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Flujo de trabajo asistido: skills, agentes, slash commands y el prompt de contexto
+# del proyecto. No se versionan.
+.claude/
+contextPrompt.md
+
+# README de la raiz: describe el flujo de trabajo y enlaza a los archivos de arriba.
+# La barra inicial lo limita a la raiz, para no arrastrar data/raw/README.md.
+/README.md
+
+# MCP (contienen API keys en texto plano). Solo .mcp.json.example queda versionado,
+# igual que en la branch `plane` de fastapi-harness-template.
+.mcp.json
+.env

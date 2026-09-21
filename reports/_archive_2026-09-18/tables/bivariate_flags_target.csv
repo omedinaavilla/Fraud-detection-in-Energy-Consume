@@ -1,0 +1,9 @@
+variable,n_flagged,n_not_flagged,rate_flagged_pct,flagged_wilson_lo_pct,flagged_wilson_hi_pct,rate_not_flagged_pct,not_flagged_wilson_lo_pct,not_flagged_wilson_hi_pct,risk_ratio,rr_ci95_lo,rr_ci95_hi
+tiene al menos un logical_duplicate,2191,133302,11.8211,10.5356,13.2403,5.4815,5.3606,5.605,2.1565,1.9193,2.423
+tiene al menos un index_regression,1816,133677,11.3436,9.9659,12.8845,5.5058,5.3848,5.6294,2.0603,1.8083,2.3475
+tiene contador ELEC y GAZ,61376,74117,7.2357,7.0334,7.4434,4.2163,4.074,4.3634,1.7161,1.6414,1.7942
+tiene al menos un months_number_invalid,14944,120549,6.4106,6.029,6.8146,5.4816,5.3545,5.6115,1.1695,1.0952,1.2488
+primera factura anterior al alta,8748,126745,5.3041,4.8537,5.7936,5.6034,5.4781,5.7313,0.9466,0.8639,1.0372
+tres facturas o menos,15269,120224,0.6353,0.5211,0.7743,6.2126,6.0775,6.3504,0.1023,0.0838,0.1248
+tiene al menos un counter_statue_invalid,6,135487,0.0,0.0,39.0334,5.5843,5.4633,5.7078,,,
+tiene al menos un reading_remarque_invalid,5,135488,0.0,0.0,43.4482,5.5843,5.4632,5.7078,,,

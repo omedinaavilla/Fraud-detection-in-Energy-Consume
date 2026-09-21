@@ -1,0 +1,16 @@
+level,column,test,effect_size_name,effect_size,reference_name,reference,max_abs_share_diff_pp,n_categories_train,n_categories_test,p_value,n_train,n_test,n_train_used,n_test_used,unit
+cliente,exp_n_invoices,KS dos muestras,D,0.005314,D crítico 5 %,0.006746,,,,0.20042133983627508,135493,58069,135493,58069,
+cliente,exp_span_days,KS dos muestras,D,0.006545,D crítico 5 %,0.006746,,,,0.06117923248066626,135493,58069,135493,58069,
+cliente,exp_cons_total_median,KS dos muestras,D,0.007407,D crítico 5 %,0.006746,,,,0.02299896572152539,135493,58069,135493,58069,
+cliente,exp_cons_total_max,KS dos muestras,D,0.006447,D crítico 5 %,0.006746,,,,0.06783959637667658,135493,58069,135493,58069,
+cliente,exp_n_counters,KS dos muestras,D,0.000851,D crítico 5 %,0.006746,,,,1.0,135493,58069,135493,58069,
+cliente,exp_gap_median_days,KS dos muestras,D,0.004824,D crítico 5 %,0.006872,,,,0.3208492176084634,130422,55967,130422,55967,
+factura,consommation_level_1,KS dos muestras,D,0.002485,D crítico 5 %,0.004301,,,,0.5664985352074139,4476738,1939722,200000,200000,
+factura,new_index,KS dos muestras,D,0.009095,D crítico 5 %,0.004301,,,,1.2983665665544653e-07,4476738,1939722,200000,200000,
+factura,months_number,KS dos muestras,D,0.00303,D crítico 5 %,0.004301,,,,0.3169258028851841,4476738,1939722,200000,200000,
+cliente,disrict,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.0,mínima celda esperada,12384.99,0.2189,4.0,4.0,0.7287375211814495,135493,58069,135493,58069,4 categorías tras agrupar
+cliente,client_catg,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.001674,mínima celda esperada,716.4,0.1021,3.0,3.0,0.28052595852330797,135493,58069,135493,58069,3 categorías tras agrupar
+cliente,region,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.0,mínima celda esperada,1649.11,0.1826,25.0,24.0,0.6577366730000842,135493,58069,135493,58069,13 categorías tras agrupar
+factura,tarif_type,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.008659,mínima celda esperada,22.07,0.123,17.0,16.0,6.615414412053266e-98,4476738,1939722,4476738,1939722,13 categorías tras agrupar
+factura,counter_type,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.000668,mínima celda esperada,604993.28,0.0783,2.0,2.0,0.04935421908831746,4476738,1939722,4476738,1939722,2 categorías tras agrupar
+factura,counter_statue,chi-cuadrado de homogeneidad,Cramér's V (corregida),0.001684,mínima celda esperada,0.3,0.0158,12.0,6.0,0.002118202421999037,4476738,1939722,4476738,1939722,12 categorías tras agrupar

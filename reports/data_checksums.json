@@ -1,0 +1,29 @@
+{
+  "computed_at_utc": "2026-09-18T15:16:15.828907+00:00",
+  "files": {
+    "client_train": {
+      "path": "C:\\Users\\OMAR DANIEL MEDINA V\\Documents\\ML\\Seminario\\data\\raw\\client_train.csv",
+      "sha256": "ba15926524d57058945ddccdd5bd2e1add0e00286c7940d7d8201900f2f126c3",
+      "size_bytes": 5986133,
+      "n_rows": 135493
+    },
+    "client_test": {
+      "path": "C:\\Users\\OMAR DANIEL MEDINA V\\Documents\\ML\\Seminario\\data\\raw\\client_test.csv",
+      "sha256": "8e00379178e5d11aa5c9b023753f81c265f1ef13fe8be82febd0ee46ac2b3985",
+      "size_bytes": 2253632,
+      "n_rows": 58069
+    },
+    "invoice_train": {
+      "path": "C:\\Users\\OMAR DANIEL MEDINA V\\Documents\\ML\\Seminario\\data\\raw\\invoice_train.csv",
+      "sha256": "03d6b05c74962b04d40e5609644fc14166fc13270923272ac2c3de66399c7743",
+      "size_bytes": 344347830,
+      "n_rows": 4476749
+    },
+    "invoice_test": {
+      "path": "C:\\Users\\OMAR DANIEL MEDINA V\\Documents\\ML\\Seminario\\data\\raw\\invoice_test.csv",
+      "sha256": "8c763f47d3100fbef1327d60a499a4d7d3994ca74dbd9382b5a791032486f91c",
+      "size_bytes": 146577388,
+      "n_rows": 1939730
+    }
+  }
+}

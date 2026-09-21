@@ -1,0 +1,47 @@
+[project]
+name = "steg-fraud-detection"
+version = "0.1.0"
+description = "Detección de fraude eléctrico en clientes STEG (medición convencional, dataset Zindi)"
+requires-python = ">=3.12"
+readme = "README.md"
+
+# El prompt del proyecto pide Python 3.11. El entorno disponible en esta máquina es
+# Anaconda 3.12.7 (ver reports/DECISIONS.md, decisión "entorno"). Se fija >=3.12 porque
+# es lo que existe y todo el stack de abajo lo soporta; no se instaló un intérprete nuevo.
+dependencies = [
+    "pandas==2.2.2",
+    "numpy==1.26.4",
+    "pyarrow==16.1.0",
+    "scikit-learn==1.5.1",
+    "scipy==1.13.1",
+    "matplotlib==3.9.2",
+    "lightgbm>=4.3",
+    "xgboost==3.0.1",
+    "catboost>=1.2",
+    "shap>=0.45",
+    "optuna==4.6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==7.4.4",
+    "ruff>=0.6",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

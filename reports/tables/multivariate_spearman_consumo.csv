@@ -1,0 +1,8 @@
+index,consommation_level_1,consommation_level_2,consommation_level_3,consommation_level_4,old_index,new_index,months_number
+consommation_level_1,1.0,0.3721,0.1949,0.1005,0.5187,0.5533,0.2085
+consommation_level_2,0.3721,1.0,0.4969,0.3417,0.3532,0.3773,-0.0633
+consommation_level_3,0.1949,0.4969,1.0,0.7141,0.2049,0.2196,-0.0802
+consommation_level_4,0.1005,0.3417,0.7141,1.0,0.1742,0.1844,-0.1294
+old_index,0.5187,0.3532,0.2049,0.1742,1.0,0.9937,-0.037
+new_index,0.5533,0.3773,0.2196,0.1844,0.9937,1.0,-0.0258
+months_number,0.2085,-0.0633,-0.0802,-0.1294,-0.037,-0.0258,1.0

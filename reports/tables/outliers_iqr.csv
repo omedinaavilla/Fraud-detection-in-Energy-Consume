@@ -1,0 +1,7 @@
+column,p75,iqr_upper_fence,n_outliers_high_iqr,pct_outliers_high_iqr,max
+consommation_level_1,600.0,1381.5,124585,2.7829,999910.0
+consommation_level_2,0.0,0.0,660570,14.7556,999073.0
+consommation_level_3,0.0,0.0,183358,4.0958,64492.0
+consommation_level_4,0.0,0.0,92958,2.0765,547946.0
+old_index,21660.0,51463.5,268597,5.9998,2800280.0
+new_index,22343.0,52773.5,266941,5.9628,2870972.0

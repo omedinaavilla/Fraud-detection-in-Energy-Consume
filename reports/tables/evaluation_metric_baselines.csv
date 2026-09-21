@@ -1,0 +1,8 @@
+referencia,valor,unidad
+exactitud del clasificador que predice siempre la clase mayoritaria,94.42,%
+línea base de PR-AUC (igual a la prevalencia),5.58,%
+línea base de ROC-AUC,50.0,%
+ROC-AUC del mejor agregado exploratorio por sí solo (exp_n_counters),70.74,%
+positivos en entrenamiento,7566.0,clientes
+negativos por cada positivo,16.9,razón
+"AUC del liderato público del reto (contexto externo, otro protocolo)",86.0,%

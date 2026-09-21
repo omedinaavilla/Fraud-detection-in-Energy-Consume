@@ -1,0 +1,61 @@
+table,column,check,n_affected,n_total,pct_affected,detail
+client_train,(todas),filas_con_algun_nulo,0,135493,0.0,
+client_train,(todas),filas_exactamente_duplicadas,0,135493,0.0,
+client_train,client_id,client_id_duplicado,0,135493,0.0,135493 ids únicos
+client_train,creation_date,creation_date_fuera_de_rango_plausible,0,135493,0.0,rango observado 1977-02-05 a 2019-09-10
+client_train,disrict,cardinalidad,4,135493,0.002952,"valores: [60, 62, 63, 69]"
+client_train,client_catg,cardinalidad,3,135493,0.002214,"valores: [11, 12, 51]"
+client_train,region,cardinalidad,25,135493,0.018451,"valores: [101, 103, 104, 105, 106, 107, 199, 206]..."
+client_test,(todas),filas_con_algun_nulo,0,58069,0.0,
+client_test,(todas),filas_exactamente_duplicadas,0,58069,0.0,
+client_test,client_id,client_id_duplicado,0,58069,0.0,58069 ids únicos
+client_test,creation_date,creation_date_fuera_de_rango_plausible,0,58069,0.0,rango observado 1977-02-05 a 2019-08-26
+client_test,disrict,cardinalidad,4,58069,0.006888,"valores: [60, 62, 63, 69]"
+client_test,client_catg,cardinalidad,3,58069,0.005166,"valores: [11, 12, 51]"
+client_test,region,cardinalidad,24,58069,0.04133,"valores: [101, 103, 104, 105, 106, 107, 206, 301]..."
+invoice_train,(todas),filas_con_algun_nulo,0,4476749,0.0,
+invoice_train,(todas),filas_exactamente_duplicadas,11,4476749,0.000246,
+invoice_train,client_id+invoice_date+counter_number,duplicado_por_clave_logica,29289,4476749,0.654247,misma clave con contenido potencialmente distinto; no se elimina
+invoice_train,counter_statue,valor_fuera_del_dominio_documentado,47,4476749,0.00105,"valores inesperados: ['269375', '420', '46', '618', '769', 'A']"
+invoice_train,reading_remarque,valor_fuera_del_dominio_observado_en_test,34,4476749,0.000759,"valores inesperados: [5, 203, 207, 413]"
+invoice_train,months_number,igual_a_cero,2,4476749,4.5e-05,período nulo
+invoice_train,months_number,mayor_que_12,24041,4476749,0.537019,máximo observado 636624
+invoice_train,months_number,negativo,0,4476749,0.0,
+invoice_train,old_index/new_index,new_index_menor_que_old_index,2264,4476749,0.050572,el contador retrocede: cambio de equipo no señalizado o error de captura
+invoice_train,old_index/new_index,indice_negativo,0,4476749,0.0,
+invoice_train,consommation_level_1..4,suma_niveles_distinta_de_new_menos_old,18935,4476749,0.422963,la descomposición por nivel tarifario no reconstruye el diferencial de índice
+invoice_train,consommation_level_1..4,consumo_negativo,0,4476749,0.0,
+invoice_train,consommation_level_1..4,consumo_total_cero,467553,4476749,10.44403,factura emitida sin consumo registrado
+invoice_train,counter_number,igual_a_cero,43161,4476749,0.964115,valor centinela: no identifica ningún contador
+invoice_train,counter_number,valor_compartido_por_varios_clientes,20366,201893,10.087522,"máximo 5149 clientes con el mismo valor; el denominador son valores distintos, no filas"
+invoice_train,counter_coefficient,igual_a_cero,46,4476749,0.001028,máximo observado 50
+invoice_train,invoice_date,anterior_al_quiebre_de_volumen,22112,4476749,0.49393,el README declara cobertura 2005-2019; rango real 1977-06-09 a 2019-12-07
+invoice_test,(todas),filas_con_algun_nulo,0,1939730,0.0,
+invoice_test,(todas),filas_exactamente_duplicadas,8,1939730,0.000412,
+invoice_test,client_id+invoice_date+counter_number,duplicado_por_clave_logica,14144,1939730,0.729174,misma clave con contenido potencialmente distinto; no se elimina
+invoice_test,counter_statue,valor_fuera_del_dominio_documentado,0,1939730,0.0,ninguno
+invoice_test,reading_remarque,valor_fuera_del_dominio_observado_en_test,0,1939730,0.0,ninguno
+invoice_test,months_number,igual_a_cero,9,1939730,0.000464,período nulo
+invoice_test,months_number,mayor_que_12,10392,1939730,0.535745,máximo observado 990688
+invoice_test,months_number,negativo,0,1939730,0.0,
+invoice_test,old_index/new_index,new_index_menor_que_old_index,1054,1939730,0.054337,el contador retrocede: cambio de equipo no señalizado o error de captura
+invoice_test,old_index/new_index,indice_negativo,0,1939730,0.0,
+invoice_test,consommation_level_1..4,suma_niveles_distinta_de_new_menos_old,8119,1939730,0.418563,la descomposición por nivel tarifario no reconstruye el diferencial de índice
+invoice_test,consommation_level_1..4,consumo_negativo,0,1939730,0.0,
+invoice_test,consommation_level_1..4,consumo_total_cero,201836,1939730,10.405366,factura emitida sin consumo registrado
+invoice_test,counter_number,igual_a_cero,18455,1939730,0.951421,valor centinela: no identifica ningún contador
+invoice_test,counter_number,valor_compartido_por_varios_clientes,4276,91966,4.649544,"máximo 2196 clientes con el mismo valor; el denominador son valores distintos, no filas"
+invoice_test,counter_coefficient,igual_a_cero,30,1939730,0.001547,máximo observado 21
+invoice_test,invoice_date,anterior_al_quiebre_de_volumen,9357,1939730,0.482387,el README declara cobertura 2005-2019; rango real 1977-07-13 a 2019-12-07
+train,client_id,cliente_sin_ninguna_factura,0,135493,0.0,sin historial no hay variables agregadas
+train,client_id,factura_sin_cliente,0,135493,0.0,rompería la integridad referencial
+train,creation_date vs. min(invoice_date),primera_factura_anterior_al_alta,8748,135493,6.456422,"mediana del adelanto 75 días, máximo 322 días"
+test,client_id,cliente_sin_ninguna_factura,0,58069,0.0,sin historial no hay variables agregadas
+test,client_id,factura_sin_cliente,0,58069,0.0,rompería la integridad referencial
+test,creation_date vs. min(invoice_date),primera_factura_anterior_al_alta,3677,58069,6.332122,"mediana del adelanto 77 días, máximo 323 días"
+train vs. test,client_id,clientes_en_ambas_particiones,0,135493,0.0,un solapamiento invalidaría cualquier evaluación
+train vs. test,region,categorias_presentes_en_una_sola_particion,1,25,4.0,solo en train: [199]; solo en test: []
+train vs. test,disrict,categorias_presentes_en_una_sola_particion,0,4,0.0,solo en train: []; solo en test: []
+train vs. test,client_catg,categorias_presentes_en_una_sola_particion,0,3,0.0,solo en train: []; solo en test: []
+train vs. test,tarif_type,categorias_presentes_en_una_sola_particion,1,17,5.882353,solo en train: [18]; solo en test: []
+train vs. test,counter_code,categorias_presentes_en_una_sola_particion,3,42,7.142857,"solo en train: [0, 1, 367]; solo en test: []"

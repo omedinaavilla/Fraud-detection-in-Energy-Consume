@@ -1,0 +1,6 @@
+bandera,rr_al_menos_una,rank_biserial_de_la_proporcion,proporcion_supera_umbral,rr_q1,rr_q2,rr_q3,rr_q4,rr_q5
+logical_duplicate,2.1565,0.019,False,2.3108,2.8219,2.1262,1.9574,1.261
+counter_statue_invalid,,-0.0001,False,,,,,
+reading_remarque_invalid,,-0.0,False,,,,,
+months_number_invalid,1.1695,0.0153,False,3.3762,1.7507,1.0235,1.0896,0.9646
+index_regression,2.0603,0.0146,False,9.5159,1.838,1.8329,1.5344,1.365

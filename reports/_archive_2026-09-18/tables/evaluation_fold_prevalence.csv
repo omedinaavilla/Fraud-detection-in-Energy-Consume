@@ -1,0 +1,11 @@
+fold,n_valid,n_pos,prevalence_pct,wilson_lo_pct,wilson_hi_pct,esquema
+1,27099,1517,5.598,5.3305,5.878,GroupKFold
+2,27099,1549,5.7161,5.4459,5.9988,GroupKFold
+3,27099,1515,5.5906,5.3233,5.8705,GroupKFold
+4,27098,1486,5.4838,5.219,5.7612,GroupKFold
+5,27098,1499,5.5318,5.2658,5.8103,GroupKFold
+1,27099,1552,5.7271,5.4567,6.0101,StratifiedGroupKFold
+2,27099,1442,5.3212,5.0603,5.5949,StratifiedGroupKFold
+3,27098,1534,5.6609,5.392,5.9424,StratifiedGroupKFold
+4,27099,1543,5.6939,5.4243,5.9762,StratifiedGroupKFold
+5,27098,1495,5.517,5.2514,5.7952,StratifiedGroupKFold
