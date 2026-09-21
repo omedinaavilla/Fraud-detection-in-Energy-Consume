@@ -75,19 +75,21 @@ def apply_style() -> None:
     )
 
 
-def save_figure(fig: plt.Figure, path: Path, close: bool = False) -> plt.Figure:
+def save_figure(fig: plt.Figure, path: Path, close: bool = False) -> None:
     """Guarda la figura en ``path`` (PNG, 300 dpi) creando el directorio si hace falta.
 
     ``close`` es ``False`` por defecto porque el consumidor principal es el notebook:
     cerrar la figura antes de que termine la celda impide que el backend inline la
-    muestre. Devuelve la misma figura para poder encadenar
-    ``save_figure(fig, ruta)`` como última expresión de una celda.
+    muestre.
+
+    No devuelve la figura a propósito. El backend inline ya la dibuja al terminar la
+    celda; si además se devolviera, Jupyter dibujaría el valor de retorno y la figura
+    saldría dos veces en toda celda que termine en esta llamada.
     """
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path)
     if close:
         plt.close(fig)
-    return fig
 
 
 def add_caption(fig: plt.Figure, text: str) -> None:
