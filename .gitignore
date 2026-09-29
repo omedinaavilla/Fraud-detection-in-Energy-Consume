@@ -40,9 +40,8 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Flujo de trabajo asistido: skills, agentes, slash commands y el prompt de contexto
-# del proyecto. No se versionan.
-.claude/
+# Flujo de trabajo asistido: el prompt de contexto del proyecto no se versiona.
+# skills, agentes y slash commands (.claude/) sí se versionan.
 contextPrompt.md
 
 # README de la raiz: describe el flujo de trabajo y enlaza a los archivos de arriba.
