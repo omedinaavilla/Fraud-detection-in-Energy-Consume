@@ -39,6 +39,15 @@ TOP_K_CATEGORIES: int = 12
 #: Tamaño máximo de submuestra para pruebas costosas (KS sobre millones de filas).
 SAMPLE_SIZE: int = 200_000
 
+#: Submuestra de Shapiro-Wilk: por encima de 5.000 observaciones scipy advierte que el
+#: p-valor deja de ser exacto.
+SHAPIRO_MAX_N: int = 5000
+
+#: Coeficiente del valor crítico asintótico de Lilliefors al 5 % (D crítico = 0,886/√n):
+#: la distancia de Kolmogorov-Smirnov a una normal cuya media y desviación se estiman de
+#: los mismos datos no se compara con el crítico del KS clásico, que sería demasiado laxo.
+LILLIEFORS_COEF_05: float = 0.886
+
 
 # --- Proporciones y asociación -----------------------------------------------------
 
@@ -382,6 +391,160 @@ def compare_categorical(
         "n_train_used": int(len(a)),
         "n_test_used": int(len(b)),
         "unit": f"{kept.shape[1]} categorías tras agrupar",
+    }
+
+
+# --- Normalidad, homogeneidad de varianzas y uniformidad -----------------------------
+
+
+def normality_tests(
+    values: pd.Series | np.ndarray,
+    column: str,
+    scale: str = "original",
+    sample_size: int = SHAPIRO_MAX_N,
+    seed: int = SEED,
+) -> dict[str, object]:
+    """Tres pruebas de normalidad y la magnitud del alejamiento, para una numérica.
+
+    Con millones de filas cualquier prueba de normalidad rechaza, y el p-valor no
+    distingue un alejamiento trivial de uno grave (``steg-eda-statistics``). Por eso cada
+    prueba va con una medida de cuánto se aleja la variable de la normal:
+
+    * asimetría y curtosis en exceso, que valen 0 en una normal;
+    * W de Shapiro-Wilk sobre una submuestra de ``sample_size`` filas sorteada con
+      ``seed`` (W = 1 en una normal);
+    * K² de D'Agostino-Pearson sobre todas las filas, que combina asimetría y curtosis;
+    * D de Lilliefors: la mayor distancia vertical entre la distribución acumulada
+      observada y la de una normal con la misma media y desviación, con su crítico
+      asintótico al 5 %. Se lee en probabilidad acumulada: D = 0,10 significa que en
+      algún punto las dos curvas se separan diez puntos porcentuales.
+
+    ``scale`` solo etiqueta la fila (p. ej. ``"log10(1+x)"``): la transformación la
+    aplica quien llama. Las filas de una misma unidad (facturas de un cliente) no son
+    independientes, otra razón para leer la magnitud antes que el p-valor.
+    """
+    arr = pd.to_numeric(pd.Series(np.asarray(values)), errors="coerce").dropna()
+    x = arr.to_numpy(dtype="float64")
+    n = int(x.size)
+    row: dict[str, object] = {"column": column, "scale": scale, "n": n}
+    if n < 20:
+        return row
+    rng = np.random.default_rng(seed)
+    sub = x if n <= sample_size else rng.choice(x, size=sample_size, replace=False)
+    sw = stats.shapiro(sub)
+    k2 = stats.normaltest(x)
+    xs = np.sort(x)
+    sd = float(xs.std(ddof=1))
+    if sd > 0:
+        cdf = stats.norm.cdf(xs, loc=float(xs.mean()), scale=sd)
+        d = float(max((np.arange(1, n + 1) / n - cdf).max(), (cdf - np.arange(0, n) / n).max()))
+    else:
+        d = float("nan")
+    d_crit = LILLIEFORS_COEF_05 / np.sqrt(n)
+    row.update(
+        {
+            "skew": float(stats.skew(x, bias=False)),
+            "excess_kurtosis": float(stats.kurtosis(x, bias=False)),
+            "shapiro_n": int(sub.size),
+            "shapiro_w": float(sw.statistic),
+            "shapiro_p": float(sw.pvalue),
+            "dagostino_k2": float(k2.statistic),
+            "dagostino_p": float(k2.pvalue),
+            "lilliefors_d": d,
+            "lilliefors_d_critical_05": float(d_crit),
+            "normal_rejected_05": bool(
+                sw.pvalue < 0.05 and k2.pvalue < 0.05 and d > d_crit
+            ),
+        }
+    )
+    return row
+
+
+def variance_homogeneity(a: pd.Series | np.ndarray, b: pd.Series | np.ndarray) -> dict[str, float]:
+    """Homogeneidad de la dispersión entre dos grupos, con su tamaño de efecto.
+
+    Responde si la variable se dispersa igual en los dos grupos, que es el supuesto de
+    homocedasticidad del t de Student y del ANOVA. Se usan dos pruebas robustas y no la
+    de Bartlett, que confunde falta de normalidad con diferencia de varianzas:
+
+    * Brown-Forsythe (Levene centrada en la mediana): un ANOVA sobre las desviaciones
+      absolutas de cada valor respecto a la mediana de su grupo.
+    * Fligner-Killeen: la misma idea sobre rangos, todavía menos sensible a las colas.
+
+    El tamaño de efecto es la razón entre las desviaciones absolutas medias respecto a la
+    mediana (``b`` / ``a``), que es la cantidad que compara Brown-Forsythe: 1 es igual
+    dispersión, 0,5 la mitad en ``b``. La razón de rangos intercuartílicos se añade como
+    lectura alternativa. Para que la dispersión se lea junto a la posición, devuelve
+    también el rank-biserial de Mann-Whitney (``2 * U / (n_a * n_b) - 1``, positivo si
+    ``b`` tiende a valores mayores), la misma definición que usa
+    :mod:`steg.eda.bivariate`.
+
+    La función no mira ninguna etiqueta: compara dos muestras. Si los grupos se forman con
+    ``target``, quien llama responde de usar solo la partición de entrenamiento.
+    """
+    x = pd.to_numeric(pd.Series(np.asarray(a)), errors="coerce").dropna().to_numpy("float64")
+    y = pd.to_numeric(pd.Series(np.asarray(b)), errors="coerce").dropna().to_numpy("float64")
+    out: dict[str, float] = {"n_a": int(x.size), "n_b": int(y.size)}
+    if x.size < 2 or y.size < 2:
+        return out
+
+    def _mad(v: np.ndarray) -> float:
+        return float(np.mean(np.abs(v - np.median(v))))
+
+    def _iqr(v: np.ndarray) -> float:
+        q1, q3 = np.percentile(v, [25, 75])
+        return float(q3 - q1)
+
+    bf = stats.levene(x, y, center="median")
+    fk = stats.fligner(x, y, center="median")
+    mw = stats.mannwhitneyu(y, x, alternative="two-sided")
+    mad_a, mad_b = _mad(x), _mad(y)
+    iqr_a, iqr_b = _iqr(x), _iqr(y)
+    out.update(
+        {
+            "median_a": float(np.median(x)),
+            "median_b": float(np.median(y)),
+            "mad_a": mad_a,
+            "mad_b": mad_b,
+            "mad_ratio": mad_b / mad_a if mad_a > 0 else float("nan"),
+            "iqr_a": iqr_a,
+            "iqr_b": iqr_b,
+            "iqr_ratio": iqr_b / iqr_a if iqr_a > 0 else float("nan"),
+            "brown_forsythe_w": float(bf.statistic),
+            "brown_forsythe_p": float(bf.pvalue),
+            "fligner_killeen_x2": float(fk.statistic),
+            "fligner_killeen_p": float(fk.pvalue),
+            "rank_biserial": float(2.0 * mw.statistic / (x.size * y.size) - 1.0),
+            "mannwhitney_p": float(mw.pvalue),
+        }
+    )
+    return out
+
+
+def uniformity_test(counts: Sequence[float] | pd.Series) -> dict[str, float]:
+    """Chi-cuadrado de bondad de ajuste a un reparto uniforme, con la w de Cohen.
+
+    Con millones de filas el chi-cuadrado rechaza cualquier desviación; la w de Cohen,
+    raíz de chi² / n, mide cuánto se aparta el reparto observado del uniforme con
+    independencia de n (0,1 es el umbral convencional de efecto pequeño, 0,3 de medio).
+    Se añade la mayor distancia de una categoría a la cuota uniforme, en puntos
+    porcentuales, que es la traducción directa de la w.
+    """
+    obs = np.asarray(counts, dtype="float64")
+    n = float(obs.sum())
+    k = int(obs.size)
+    res = stats.chisquare(obs)
+    share = 100.0 * obs / n
+    return {
+        "n": int(n),
+        "k": k,
+        "chi2": float(res.statistic),
+        "dof": k - 1,
+        "p_value": float(res.pvalue),
+        "cohen_w": float(np.sqrt(res.statistic / n)),
+        "max_share_pct": float(share.max()),
+        "min_share_pct": float(share.min()),
+        "max_abs_dev_pp": float(np.abs(share - 100.0 / k).max()),
     }
 
 
