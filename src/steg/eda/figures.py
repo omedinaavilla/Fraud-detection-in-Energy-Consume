@@ -35,12 +35,15 @@ from __future__ import annotations
 import math
 from collections.abc import Callable, Sequence
 from pathlib import Path
+from statistics import NormalDist
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 from matplotlib.ticker import FixedLocator, FuncFormatter, MaxNLocator
+
+from steg.config import SEED
 
 # --- Paleta ------------------------------------------------------------------------
 #
@@ -413,10 +416,15 @@ def plot_log_histogram(
     color: str = COLOR_NEUTRAL,
     bins: int = 60,
     label: str | None = None,
+    median: bool = False,
 ) -> None:
     """Histograma en escala log10(1+x) del eje x, con ticks legibles (0, 10, 100, 1 k...).
 
     El eje x se etiqueta fuera (``ax.set_xlabel``); el pie de figura declara la escala.
+    ``median=True`` marca la mediana de ``values`` con una línea discontinua, para que la
+    posición central se lea sin contar barras en escala logarítmica. La línea no lleva
+    rótulo: en un panel estrecho chocaría con los ticks o con la moda, así que el valor
+    va en el subtítulo y el pie de figura explica la línea.
     """
     ax.hist(
         log10_1p(values),
@@ -431,6 +439,10 @@ def plot_log_histogram(
     ax.grid(axis="x", visible=False)
     format_axis_thousands(ax, "y")
     format_axis_log10_1p(ax, "x")
+    if median and np.size(values):
+        med = float(np.median(np.asarray(values, dtype="float64")))
+        ax.axvline(float(log10_1p(med)), color=INK_SECONDARY, linestyle=(0, (4, 3)),
+                   linewidth=1.0, zorder=2)
 
 
 def plot_ecdf(
@@ -455,6 +467,59 @@ def plot_ecdf(
     ax.step(arr, y, where="post", color=color, label=label, linewidth=1.8)
     ax.set_ylabel("proporción acumulada de clientes")
     ax.set_ylim(0, 1.02)
+
+
+def plot_qq(
+    ax: plt.Axes,
+    values: np.ndarray,
+    color: str = COLOR_NEUTRAL,
+    n_quantiles: int = 200,
+    z_max: float = 3.29,
+    note: str | None = None,
+) -> None:
+    """Gráfico cuantil-cuantil frente a la normal, sobre la variable tipificada.
+
+    Compara ``n_quantiles`` cuantiles empíricos de ``(x - media) / desviación`` con los
+    de una normal estándar, en probabilidades repartidas de forma uniforme en el eje de
+    la normal entre ``-z_max`` y ``z_max`` (3,29 corresponde al 0,05 % y al 99,95 %). Si
+    la variable fuera normal, los puntos caerían sobre la diagonal.
+
+    Se usan cuantiles en vez de los millones de puntos crudos porque el dibujo es el
+    mismo y así no depende de ninguna submuestra: la figura es determinista. ``note``
+    escribe un texto en la esquina superior izquierda (p. ej. el estadístico de la prueba
+    que la figura ilustra).
+    """
+    arr = np.asarray(values, dtype="float64")
+    arr = arr[np.isfinite(arr)]
+    sd = float(arr.std(ddof=1))
+    z = (arr - float(arr.mean())) / sd if sd > 0 else arr * 0.0
+    theo = np.linspace(-z_max, z_max, n_quantiles)
+    normal = NormalDist()
+    probs = np.array([normal.cdf(t) for t in theo])
+    emp = np.quantile(z, probs)
+    lim = float(max(z_max, np.nanmax(np.abs(emp))))
+    ax.plot([-z_max, z_max], [-z_max, z_max], color=INK_SECONDARY, linestyle=(0, (4, 3)),
+            linewidth=1.0, zorder=2)
+    ax.scatter(theo, emp, s=14, color=color, edgecolor="white", linewidth=0.4, zorder=3)
+    ax.set_xlim(-z_max - 0.2, z_max + 0.2)
+    ax.set_ylim(min(-z_max, float(np.nanmin(emp))) - 0.06 * lim,
+                max(z_max, float(np.nanmax(emp))) + 0.06 * lim)
+    ax.set_xlabel("cuantil teórico de la normal")
+    ax.set_ylabel("cuantil observado (tipificado)")
+    if note:
+        ax.annotate(
+            note,
+            xy=(0.0, 1.0),
+            xycoords="axes fraction",
+            xytext=(6, -6),
+            textcoords="offset points",
+            fontsize=8,
+            color=INK_SECONDARY,
+            ha="left",
+            va="top",
+            bbox=_LABEL_BBOX,
+            zorder=5,
+        )
 
 
 def boxplot_stats(values: np.ndarray, label: str) -> dict[str, object]:
@@ -495,6 +560,7 @@ def boxplot_stats(values: np.ndarray, label: str) -> dict[str, object]:
         "n_outliers_low": n_lo,
         "n_outliers_high": n_hi,
         "pct_outliers_high": round(100.0 * n_hi / n, 4),
+        "pct_zero": round(100.0 * float((arr == 0).mean()), 4),
         "p99": float(np.percentile(arr, 99)),
         "max": float(arr.max()),
     }
@@ -507,6 +573,8 @@ def plot_boxplots(
     color: str = COLOR_NEUTRAL,
     annotate: str | None = "outliers",
     show_max: bool = True,
+    samples: Sequence[np.ndarray] | None = None,
+    seed: int = SEED,
 ) -> None:
     """Diagramas de caja horizontales, uno por variable, a partir de :func:`boxplot_stats`.
 
@@ -521,10 +589,37 @@ def plot_boxplots(
     * Con ``log=True`` la escala es log10(1 + x) y los ticks se etiquetan como valores
       (0, 10, 100, 1 k...). Una caja colapsada en 0 significa que al menos tres cuartas
       partes de los valores son cero: es información, no un defecto del dibujo.
+    * ``samples`` (una submuestra por variable, en el mismo orden que ``stats``) se
+      dibuja como una nube de puntos bajo cada caja, con desplazamiento vertical
+      aleatorio fijado por ``seed``. La caja resume; la nube deja ver dónde se acumulan
+      los datos y cuántos caen más allá de los bigotes. Quien llama decide el tamaño de
+      la submuestra y lo declara en el pie de figura.
     """
     tf = log10_1p if log else (lambda v: np.asarray(v, dtype="float64"))
+    if samples is not None:
+        keep = [bool(s.get("n", 0)) for s in stats]
+        samples = [smp for smp, k in zip(samples, keep, strict=True) if k]
     stats = [s for s in stats if s.get("n", 0)]
     positions = np.arange(len(stats))[::-1]
+    box_width = 0.55
+    if samples is not None:
+        # La nube va en una franja por debajo de la caja (no detrás), para que ni la caja
+        # tape los puntos ni los puntos ensucien la caja. La caja se estrecha para dejarle
+        # sitio dentro de la misma fila.
+        box_width = 0.4
+        rng = np.random.default_rng(seed)
+        for smp, y in zip(samples, positions, strict=True):
+            v = tf(np.asarray(smp, dtype="float64"))
+            ax.scatter(
+                v,
+                y - 0.34 + rng.uniform(-0.08, 0.08, size=v.size),
+                s=3.5,
+                color=color,
+                alpha=0.22,
+                linewidth=0,
+                zorder=1,
+                rasterized=True,
+            )
     bxp_stats = []
     for s in stats:
         bxp_stats.append(
@@ -546,7 +641,7 @@ def plot_boxplots(
     ax.bxp(
         bxp_stats,
         positions=positions,
-        widths=0.55,
+        widths=box_width,
         patch_artist=True,
         showfliers=False,
         boxprops={"facecolor": color, "edgecolor": "white", "linewidth": 0.8, "alpha": 0.92},
@@ -559,6 +654,24 @@ def plot_boxplots(
     ax.set_yticklabels([str(s["label"]) for s in stats])
     ax.grid(axis="y", visible=False)
     ax.spines["left"].set_visible(False)
+    # Una caja colapsada en cero se ve como una raya suelta; se rotula para que no se lea
+    # como un fallo del dibujo.
+    for s, y in zip(stats, positions, strict=True):
+        if s["q1"] == s["q3"] == s["whishi"] == 0:
+            pct0 = s.get("pct_zero")
+            text = "caja colapsada en 0" + (
+                f": el {es_number(pct0, 0)} % de los valores es 0" if pct0 is not None else ""
+            )
+            ax.annotate(
+                text,
+                xy=(float(tf(0.0)), y),
+                xytext=(9, 0),
+                textcoords="offset points",
+                fontsize=8,
+                color=INK_MUTED,
+                ha="left",
+                va="center",
+            )
     if log:
         # Si ningún bigote llega a cero (p. ej. solo valores positivos), el eje arranca
         # justo por debajo del bigote más bajo, para no mostrar un tick en «0».
@@ -654,25 +767,50 @@ def plot_barh_frequency(
     color: str = COLOR_NEUTRAL,
     xlabel: str = "filas",
     annotate_values: str | None = None,
+    other_label: str | None = None,
+    bar_height: float = 0.68,
+    min_slots: int | None = None,
 ) -> None:
     """Barras horizontales ordenadas por frecuencia (la de mayor conteo arriba).
 
     ``annotate_values`` es un formato (p. ej. ``"{:.2f} %"``) que escribe el valor al
     final de cada barra. Se usa cuando el reparto es tan desigual que las categorías
     minoritarias quedan como barras de pocos píxeles y solo el número las hace legibles.
+
+    ``other_label`` nombra la categoría que agrupa a las raras (p. ej. ``"otras"``): va
+    siempre al final, sea cual sea su frecuencia, y en el tono claro del neutro, porque
+    no es una categoría como las demás. ``bar_height`` es el grosor de la barra en
+    fracción de la fila. ``min_slots`` reserva al menos ese número de filas: con dos
+    categorías en un panel pensado para nueve, las barras conservan el grosor de los
+    paneles vecinos y quedan arriba, en vez de estirarse hasta llenar el eje.
     """
     # ``order`` son posiciones: si ``labels`` llega como Series con índice propio,
     # ``labels[i]`` buscaría la etiqueta i y no la posición i.
     labels = list(labels)
     values = np.asarray(counts, dtype="float64")
-    order = np.argsort(values)
+    order = np.argsort(values, kind="stable")
+    if other_label is not None:
+        # «otras» abajo del todo: en un orden ascendente, la primera posición.
+        order = np.array(
+            [i for i in order if str(labels[i]) == other_label]
+            + [i for i in order if str(labels[i]) != other_label]
+        )
     y = np.arange(len(labels))
-    ax.barh(y, values[order], color=color, height=0.68, edgecolor="white", linewidth=0.5)
+    bar_colors = [
+        COLOR_NEUTRAL_LIGHT if other_label is not None and str(labels[i]) == other_label
+        else color
+        for i in order
+    ]
+    ax.barh(y, values[order], color=bar_colors, height=bar_height, edgecolor="white",
+            linewidth=0.5)
     ax.set_yticks(y)
     ax.set_yticklabels([str(labels[i]) for i in order])
     ax.set_xlabel(xlabel)
     ax.grid(axis="y", visible=False)
     ax.spines["left"].set_visible(False)
+    if min_slots is not None:
+        # Las filas sobrantes van por debajo: la barra más larga sigue arriba del todo.
+        ax.set_ylim(min(0, len(labels) - min_slots) - 0.5, len(labels) - 0.5)
     if values.size and float(values.max()) >= 1e4:
         format_axis_thousands(ax, "x")
     if annotate_values is not None:
@@ -841,18 +979,34 @@ def plot_boxplot_by_target(
     values_pos: np.ndarray,
     ylabel: str,
     log: bool = True,
+    *,
+    n_points: int = 0,
+    seed: int = SEED,
+    annotate: bool = False,
 ) -> None:
-    """Caja por clase con escala log10(1+x) opcional, para numéricas muy sesgadas."""
+    """Caja por clase con escala log10(1+x) opcional, para numéricas muy sesgadas.
+
+    Con ``n_points > 0`` cada caja lleva al lado una nube de hasta ``n_points`` valores
+    de su clase, sorteados con ``seed`` (el mismo número por clase, para que la clase
+    minoritaria no desaparezca bajo la mayoritaria; el ``n`` real va en el eje). Con
+    ``annotate=True`` se escribe la mediana junto a cada caja y el ``n`` de cada clase
+    bajo su etiqueta. Los valores por encima de los bigotes no se dibujan como puntos
+    sueltos: los muestra la nube.
+    """
     a = log10_1p(values_neg) if log else np.asarray(values_neg, dtype="float64")
     b = log10_1p(values_pos) if log else np.asarray(values_pos, dtype="float64")
     a = a[np.isfinite(a)]
     b = b[np.isfinite(b)]
+    labels = ["no fraude", "fraude"]
+    if annotate:
+        labels = [f"{lab}\nn = {es_number(arr.size)}" for lab, arr in zip(labels, (a, b),
+                                                                          strict=True)]
     bp = ax.boxplot(
         [a, b],
-        tick_labels=["no fraude", "fraude"],
+        tick_labels=labels,
         patch_artist=True,
         showfliers=False,
-        widths=0.55,
+        widths=0.36 if n_points else 0.55,
         medianprops={"color": INK, "linewidth": 1.6},
         whiskerprops={"color": INK_SECONDARY, "linewidth": 1.2},
         capprops={"color": INK_SECONDARY, "linewidth": 1.2},
@@ -861,6 +1015,36 @@ def plot_boxplot_by_target(
     for patch, color in zip(bp["boxes"], [COLOR_NO_FRAUD, COLOR_FRAUD], strict=False):
         patch.set_facecolor(color)
         patch.set_alpha(0.9)
+    if n_points:
+        rng = np.random.default_rng(seed)
+        for x, arr, color in ((1, a, COLOR_NO_FRAUD), (2, b, COLOR_FRAUD)):
+            pick = arr if arr.size <= n_points else rng.choice(arr, n_points, replace=False)
+            ax.scatter(
+                x + 0.33 + rng.uniform(-0.07, 0.07, size=pick.size),
+                pick,
+                s=4,
+                color=color,
+                alpha=0.25,
+                linewidth=0,
+                zorder=1,
+                rasterized=True,
+            )
+        ax.set_xlim(0.45, 2.7)
+    if annotate:
+        for x, arr in ((1, a), (2, b)):
+            med = float(np.median(arr))
+            shown = (10.0**med - 1.0) if log else med
+            ax.annotate(
+                f"mediana\n{compact_number(round(shown, 1))}",
+                xy=(x - (0.18 if n_points else 0.275), med),
+                xytext=(-5, 0),
+                textcoords="offset points",
+                fontsize=8,
+                color=INK_SECONDARY,
+                ha="right",
+                va="center",
+                linespacing=1.1,
+            )
     ax.set_ylabel(ylabel)
     ax.grid(axis="x", visible=False)
     if log:
@@ -991,6 +1175,70 @@ def plot_month_profile(
             orientation="h",
             label_x=1.0,
         )
+
+
+def plot_month_deviation(
+    ax: plt.Axes,
+    months: Sequence[int],
+    shares_pct: Sequence[float],
+    reference: float = 100 / 12,
+    color: str = COLOR_NEUTRAL,
+    color_below: str = COLOR_NEUTRAL_LIGHT,
+    ylabel: str = "diferencia con el reparto uniforme (pp)",
+) -> None:
+    """Estacionalidad como distancia de cada mes al reparto uniforme, en puntos.
+
+    Cuando las doce cuotas rondan el 8,3 %, doce barras casi iguales esconden justo lo
+    que importa, que es la distancia a la línea de reparto uniforme. Aquí esa distancia
+    es la barra: hacia arriba los meses con más facturas de las que les tocarían, hacia
+    abajo los que tienen menos, en el tono claro del mismo neutro. Solo se rotulan el
+    mes más cargado y el más flojo con su cuota; el resto se lee en el eje.
+    """
+    months = list(months)
+    shares = np.asarray(list(shares_pct), dtype="float64")
+    dev = shares - reference
+    colors = [color if d >= 0 else color_below for d in dev]
+    ax.bar(months, dev, color=colors, width=0.62, edgecolor="white", linewidth=0.5, zorder=3)
+    ax.axhline(0.0, color=INK_SECONDARY, linewidth=1.0, zorder=4)
+    ax.set_xticks(list(range(1, 13)))
+    ax.set_xticklabels(MESES)
+    ax.set_xlabel("mes de la factura")
+    ax.set_ylabel(ylabel)
+    ax.grid(axis="x", visible=False)
+
+    def _signed(v: float, _pos: int) -> str:
+        sign = "+" if v > 1e-9 else ("−" if v < -1e-9 else "")
+        return sign + es_number(abs(v), 1)
+
+    ax.yaxis.set_major_formatter(FuncFormatter(_signed))
+    span = float(np.abs(dev).max()) if dev.size else 1.0
+    ax.set_ylim(-span * 1.4, span * 1.4)
+    if dev.size:
+        for idx in (int(np.argmax(dev)), int(np.argmin(dev))):
+            up = bool(dev[idx] >= 0)
+            ax.annotate(
+                f"{es_number(shares[idx], 2)} %",
+                xy=(months[idx], dev[idx]),
+                xytext=(0, 4 if up else -4),
+                textcoords="offset points",
+                ha="center",
+                va="bottom" if up else "top",
+                fontsize=8,
+                color=INK_SECONDARY,
+            )
+    ax.annotate(
+        f"reparto uniforme ({es_number(reference, 2)} %)",
+        xy=(1.0, 0.0),
+        xycoords=("axes fraction", "data"),
+        xytext=(-4, 4),
+        textcoords="offset points",
+        ha="right",
+        va="bottom",
+        fontsize=8,
+        color=INK_SECONDARY,
+        bbox=_LABEL_BBOX,
+        zorder=5,
+    )
 
 
 def plot_rate_by_bin(
