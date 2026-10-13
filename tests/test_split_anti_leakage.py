@@ -10,6 +10,8 @@ from steg.data.split import (
     assert_no_group_leakage,
     grouped_kfold_splits,
     grouped_train_valid_split,
+    make_holdout_assignment,
+    stratified_grouped_kfold_splits,
 )
 
 
@@ -65,3 +67,37 @@ def test_assert_no_group_leakage_detects_a_violation():
         pass
     else:
         raise AssertionError("se esperaba que assert_no_group_leakage detectara la fuga")
+
+
+def _synthetic_clients(n_clients: int = 400, positive_every: int = 10) -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "client_id": [f"client_{i}" for i in range(n_clients)],
+            "target": [1.0 if i % positive_every == 0 else 0.0 for i in range(n_clients)],
+        }
+    )
+
+
+def test_holdout_assignment_is_stratified_and_order_independent():
+    clients = _synthetic_clients()
+    is_holdout = make_holdout_assignment(clients, holdout_size=0.2)
+
+    assert is_holdout.sum() == 80
+    assert clients.loc[is_holdout, "target"].mean() == clients["target"].mean()
+
+    shuffled = clients.sample(frac=1.0, random_state=7).reset_index(drop=True)
+    reassigned = make_holdout_assignment(shuffled, holdout_size=0.2)
+    assert set(shuffled.loc[reassigned, "client_id"]) == set(clients.loc[is_holdout, "client_id"])
+
+
+def test_stratified_grouped_kfold_never_places_a_client_in_two_folds():
+    df = _synthetic_invoices(n_clients=60, invoices_per_client=3)
+    df["target"] = df["value"].map(lambda v: 1.0 if v % 5 == 0 else 0.0)
+
+    seen: set[str] = set()
+    for train_idx, valid_idx in stratified_grouped_kfold_splits(df, n_splits=5, seed=1):
+        assert_no_group_leakage(df, train_idx, valid_idx)
+        fold_clients = set(df.iloc[valid_idx]["client_id"])
+        assert fold_clients.isdisjoint(seen)
+        seen |= fold_clients
+    assert seen == set(df["client_id"])
