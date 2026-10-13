@@ -1,0 +1,60 @@
+column,familia,unidad,definicion,fase,representaciones,descartada_por_redundancia,en_modelo_principal
+client_id,identificador,texto,Identificador del cliente,F3,"censurado, completo",False,False
+target,etiqueta,booleano,Fraude confirmado por inspección (1) o no registrado (0),F3,"censurado, completo",False,False
+is_holdout,particion,booleano,El cliente pertenece al holdout sellado,F3,"censurado, completo",False,False
+cli_region,cliente,categoría,Región del cliente,F3,"censurado, completo",False,True
+cli_disrict,cliente,categoría,Distrito del cliente,F3,"censurado, completo",False,True
+cli_catg,cliente,categoría,Categoría del cliente,F3,"censurado, completo",False,True
+inv_elec_log_cons_mediana_u12,consumo,log-consumo,Mediana de log(1+consumo mensual) en las últimas 12 lecturas (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_log_cons_p90,consumo,log-consumo,Percentil 90 de log(1+consumo mensual) (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_log_cons_desv,consumo,log-consumo,Desviación estándar de log(1+consumo mensual) (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_share_cons_cero,consumo,proporción,Proporción de lecturas con consumo cero (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_share_cons_nivel_superior,consumo,proporción,Fracción media del consumo de cada lectura facturada en los niveles 2 a 4 (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,False
+inv_elec_ratio_reciente_vs_previo,dinamica,log-razón,Mediana del log-consumo de las 4 últimas lecturas menos la de las anteriores; exige 8 lecturas (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_pendiente_log_cons_anual,dinamica,log-consumo/año,Pendiente del log-consumo contra el tiempo; exige 4 lecturas (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_share_caidas_fuertes,dinamica,proporción,Proporción de transiciones con consumo mensual inferior al 30 % del anterior (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_share_subidas_fuertes,dinamica,proporción,Proporción de transiciones con consumo mensual superior al triple del anterior (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_gap_mediana_dias,lectura,días,Mediana de días entre lecturas consecutivas (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_elec_share_gap_largo,lectura,proporción,Proporción de intervalos entre lecturas mayores de 240 días (contador elec; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_log_cons_mediana_u12,consumo,log-consumo,Mediana de log(1+consumo mensual) en las últimas 12 lecturas (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_log_cons_p90,consumo,log-consumo,Percentil 90 de log(1+consumo mensual) (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_log_cons_desv,consumo,log-consumo,Desviación estándar de log(1+consumo mensual) (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_share_cons_cero,consumo,proporción,Proporción de lecturas con consumo cero (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_share_cons_nivel_superior,consumo,proporción,Fracción media del consumo de cada lectura facturada en los niveles 2 a 4 (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,False
+inv_gaz_ratio_reciente_vs_previo,dinamica,log-razón,Mediana del log-consumo de las 4 últimas lecturas menos la de las anteriores; exige 8 lecturas (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_pendiente_log_cons_anual,dinamica,log-consumo/año,Pendiente del log-consumo contra el tiempo; exige 4 lecturas (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_share_caidas_fuertes,dinamica,proporción,Proporción de transiciones con consumo mensual inferior al 30 % del anterior (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_share_subidas_fuertes,dinamica,proporción,Proporción de transiciones con consumo mensual superior al triple del anterior (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_gap_mediana_dias,lectura,días,Mediana de días entre lecturas consecutivas (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_gaz_share_gap_largo,lectura,proporción,Proporción de intervalos entre lecturas mayores de 240 días (contador gaz; historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_index_regression,lectura,proporción,Proporción de facturas con índice nuevo menor que el anterior (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_duplicado_logico,lectura,proporción,"Proporción de facturas duplicadas por (cliente, fecha, contador) (historial censurado o completo según la representación)",F3,"censurado, completo",False,True
+inv_share_periodo_anomalo,lectura,proporción,"Proporción de facturas con months_number fuera de [1, 12] (historial censurado o completo según la representación)",F3,"censurado, completo",False,True
+inv_share_estado_contador_no_cero,lectura,proporción,Proporción de facturas con counter_statue distinto de 0 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_indice_inconsistente,lectura,proporción,Proporción de facturas cuya diferencia de índices difiere del consumo facturado (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_facturas_gas,tarifa_contador,proporción,Proporción de facturas de contador de gas (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_tasa_cambio_contador_anual,lectura,contadores/año,Contadores adicionales por tipo dividido entre los años de historial (mínimo 1) (historial censurado o completo según la representación),F3,"censurado, completo",False,False
+inv_share_nota_lectura_6,lectura,proporción,Proporción de facturas con reading_remarque = 6 (historial censurado o completo según la representación),F3,"censurado, completo",False,False
+inv_share_nota_lectura_8,lectura,proporción,Proporción de facturas con reading_remarque = 8 (historial censurado o completo según la representación),F3,"censurado, completo",False,False
+inv_share_nota_lectura_9,lectura,proporción,Proporción de facturas con reading_remarque = 9 (historial censurado o completo según la representación),F3,"censurado, completo",False,False
+inv_share_tarifa_11,tarifa_contador,proporción,Proporción de facturas con tarif_type = 11 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_tarifa_10,tarifa_contador,proporción,Proporción de facturas con tarif_type = 10 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_tarifa_15,tarifa_contador,proporción,Proporción de facturas con tarif_type = 15 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_codigo_contador_203,tarifa_contador,proporción,Proporción de facturas con counter_code = 203 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_codigo_contador_5,tarifa_contador,proporción,Proporción de facturas con counter_code = 5 (historial censurado o completo según la representación),F3,"censurado, completo",True,False
+inv_share_codigo_contador_207,tarifa_contador,proporción,Proporción de facturas con counter_code = 207 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_codigo_contador_413,tarifa_contador,proporción,Proporción de facturas con counter_code = 413 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_codigo_contador_202,tarifa_contador,proporción,Proporción de facturas con counter_code = 202 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_codigo_contador_420,tarifa_contador,proporción,Proporción de facturas con counter_code = 420 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+inv_share_codigo_contador_410,tarifa_contador,proporción,Proporción de facturas con counter_code = 410 (historial censurado o completo según la representación),F3,"censurado, completo",False,True
+exp_n_facturas,exposicion,conteo,Facturas desde 2005 (siempre sobre la ventana completa),F3,"censurado, completo",False,False
+exp_extension_historial_anios,exposicion,años,Años entre la primera y la última factura desde 2005 (siempre sobre la ventana completa),F3,"censurado, completo",False,False
+exp_indice_max_log,exposicion,log-índice,"log(1 + new_index máximo), índice acumulado (siempre sobre la ventana completa)",F3,"censurado, completo",False,False
+exp_antiguedad_alta_anios,exposicion,años,Años entre creation_date y 2019-12-31 (siempre sobre la ventana completa),F3,"censurado, completo",False,False
+exp_primera_factura_antes_de_alta,exposicion,booleano,La primera factura del historial completo es anterior a creation_date (siempre sobre la ventana completa),F3,"censurado, completo",False,False
+exp_historial_incompleto_u12,exposicion,booleano,Menos de 12 facturas desde 2005 (siempre sobre la ventana completa),F3,"censurado, completo",False,False
+exp_sin_facturas_desde_2005,exposicion,booleano,Todo el historial del cliente es anterior a 2005 (siempre sobre la ventana completa),F3,"censurado, completo",False,False
+rel_elec_cons_vs_region,relativa_pares,log-razón,Mediana u12 del log-consumo del contador elec menos la mediana de su region en el pliegue de entrenamiento (se calcula dentro del modelo),F3,dentro del pliegue,False,True
+rel_elec_cons_vs_catg,relativa_pares,log-razón,Mediana u12 del log-consumo del contador elec menos la mediana de su catg en el pliegue de entrenamiento (se calcula dentro del modelo),F3,dentro del pliegue,False,True
+rel_gaz_cons_vs_region,relativa_pares,log-razón,Mediana u12 del log-consumo del contador gaz menos la mediana de su region en el pliegue de entrenamiento (se calcula dentro del modelo),F3,dentro del pliegue,False,True
+rel_gaz_cons_vs_catg,relativa_pares,log-razón,Mediana u12 del log-consumo del contador gaz menos la mediana de su catg en el pliegue de entrenamiento (se calcula dentro del modelo),F3,dentro del pliegue,False,True

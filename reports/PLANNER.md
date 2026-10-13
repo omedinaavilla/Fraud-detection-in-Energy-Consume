@@ -231,3 +231,71 @@ convierte en un grupo genuinamente de bajo riesgo cuya eliminación alteraría l
 Y el recorte de la ventana temporal, si se hace, tendrá que justificarse por comparabilidad
 entre clientes y no por evitar fuga temporal, porque la separación entre las dos particiones
 es aleatoria por cliente y no cronológica (`temporal_train_test_last_year.csv`).
+
+## 2026-10-08 — Modelado: variables, validación, selección y evaluación en el holdout
+
+**Fase / agente:** Fases 3 a 6 (variables, entrenamiento, evaluación e interpretabilidad).
+
+**Qué debía hacerse.** Construir un modelo de detección de fraude con el protocolo adoptado
+el 2026-10-07. Todo el proceso debía quedar en un único notebook reproducible
+(`notebooks/02_modelado.ipynb`), sin fuga y con cada decisión justificada.
+
+**Qué se hizo.**
+
+- **Partición.** Se añadieron a `src/steg/data/split.py` el holdout sellado y
+  `StratifiedGroupKFold` con semilla, con sus pruebas anti-fuga.
+- **Variables.** Se construyeron por cliente en tres familias:
+  - comportamiento: consumo en escala logarítmica, dinámica, regularidad de lectura,
+    proporciones de tarifa y de código, y variables relativas a pares calculadas dentro del
+    pliegue;
+  - atributos del cliente;
+  - exposición, aislada como control.
+- **Modelos comparados.** Regresión logística, LightGBM y XGBoost. Además, ponderación de
+  clases, búsqueda con Optuna y controles de exposición.
+- **Interpretación.** SHAP y desempeño por quintil de longitud del historial, por evento de
+  equipo y por distrito.
+- **Revisión de fuga.** El notebook pasó dos revisiones adversariales antes de evaluar el
+  holdout. Las dos lo bloquearon, y sus observaciones se corrigieron.
+
+**Qué se encontró.**
+
+- **Huella de la inspección.** La verificación de historial posterior a la detección
+  confirmó el riesgo que había registrado el EDA:
+  - Los reemplazos de contador y los cambios de código o de tarifa son, en buena parte,
+    consecuencia de la inspección.
+  - Con el historial completo, el PR-AUC llegaba a 0,363. Con el historial censurado en el
+    primer evento de ese tipo, baja a 0,192.
+- **Deriva de calendario.** Varias variables delatan la fecha del corte. Expresarlas frente
+  a la tasa de su año empeoró la fuga en lugar de corregirla, y se descartó.
+- **Resultado del modelo final** (LightGBM, hiperparámetros por defecto, 38 variables):
+  - En la validación cruzada sobre `dev`, PR-AUC de 0,192 y ROC-AUC de 0,768.
+  - En el holdout, evaluado una sola vez, PR-AUC de 0,191 (IC 95 % [0,174, 0,211]) y
+    ROC-AUC de 0,762 (IC 95 % [0,750, 0,773]).
+  - Precisión del 43,5 % en el 1 % superior de la lista, 7,8 veces la prevalencia.
+  - Dentro del grupo sin evento de equipo, ROC-AUC de 0,758 en el holdout.
+- Las cifras están en `reports/MODELADO.md` y en `reports/tables/modeling_*.csv`.
+
+**Qué significa.** El modelo ordena mejor que la línea base de solo exposición (PR-AUC
+0,124 en CV) y que la prevalencia, y conserva la señal dentro del grupo sin evento. La cifra
+de `dev` no fue optimista frente al holdout. La diferencia con el control de historial
+completo no es capacidad perdida: es la parte del desempeño que procedía de huellas de la
+inspección y que no existiría al puntuar clientes todavía no inspeccionados.
+
+**Decisión tomada.** Se adopta como modelo principal `lgbm_comportamiento`. Las decisiones
+que lo sustentan están registradas en `reports/DECISIONS.md`, entrada del 2026-10-08:
+
+- se usa el historial censurado en el primer evento de equipo o de contrato;
+- se retiran las notas de lectura y la fracción en niveles superiores;
+- se conserva el grupo B, declarado dentro del ruido y con un control de sensibilidad;
+- se eligen los hiperparámetros por defecto, porque Optuna no superó el ruido.
+
+**Por qué.** Era el mejor candidato y el más simple entre los indistinguibles. Su
+representación del historial es la única de las probadas que no se apoya en huellas
+identificables de la inspección.
+
+**Implicaciones para lo siguiente.**
+
+- La Fase 7 (costo-beneficio) puede partir de la curva @k del holdout y de una calibración
+  que ya es adecuada sin recalibrar.
+- El encuadre ante el lector sigue sin decidir. Los resultados apoyan presentar el modelo
+  como priorización de inspecciones y declarar que la etiqueta es fraude detectado.
