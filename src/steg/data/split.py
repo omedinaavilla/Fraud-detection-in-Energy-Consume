@@ -17,7 +17,12 @@ from collections.abc import Iterator
 
 import numpy as np
 import pandas as pd
-from sklearn.model_selection import GroupKFold, GroupShuffleSplit
+from sklearn.model_selection import (
+    GroupKFold,
+    GroupShuffleSplit,
+    StratifiedGroupKFold,
+    train_test_split,
+)
 
 from steg.config import N_FOLDS, SEED
 
@@ -48,6 +53,52 @@ def grouped_kfold_splits(
     """
     splitter = GroupKFold(n_splits=n_splits)
     yield from splitter.split(df, groups=df[group_col])
+
+
+def make_holdout_assignment(
+    clients: pd.DataFrame,
+    target_col: str = "target",
+    id_col: str = "client_id",
+    holdout_size: float = 0.2,
+    seed: int = SEED,
+) -> pd.Series:
+    """Asigna cada cliente etiquetado a ``dev`` o al holdout sellado (``True``).
+
+    La partición se hace sobre la tabla de clientes (una fila por ``client_id``), de
+    modo que la agrupación por cliente se cumple por construcción. Se estratifica por
+    ``target`` y se ordena por ``id_col`` antes de partir para que la asignación no
+    dependa del orden de lectura del CSV: misma semilla, mismo holdout.
+    """
+    if clients[id_col].duplicated().any():
+        raise ValueError(f"{id_col} debe ser único para asignar el holdout por cliente")
+    ordered = clients.sort_values(id_col).reset_index(drop=True)
+    _, holdout_ids = train_test_split(
+        ordered[id_col],
+        test_size=holdout_size,
+        stratify=ordered[target_col],
+        random_state=seed,
+    )
+    is_holdout = clients[id_col].isin(set(holdout_ids))
+    is_holdout.name = "is_holdout"
+    return is_holdout
+
+
+def stratified_grouped_kfold_splits(
+    df: pd.DataFrame,
+    target_col: str = "target",
+    group_col: str = "client_id",
+    n_splits: int = N_FOLDS,
+    seed: int = SEED,
+) -> Iterator[tuple[np.ndarray, np.ndarray]]:
+    """Genera (train_idx, valid_idx) agrupados por ``group_col`` y estratificados por
+    ``target_col``, con barajado controlado por ``seed``.
+
+    Es el esquema adoptado para la etapa de modelado (``reports/DECISIONS.md``,
+    2026-10-07): a diferencia de ``GroupKFold``, admite semilla, lo que permite repetir
+    la validación con otro reparto y medir la varianza atribuible a la partición.
+    """
+    splitter = StratifiedGroupKFold(n_splits=n_splits, shuffle=True, random_state=seed)
+    yield from splitter.split(df, y=df[target_col], groups=df[group_col])
 
 
 def assert_no_group_leakage(

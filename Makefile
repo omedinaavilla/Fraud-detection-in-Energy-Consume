@@ -16,11 +16,9 @@ eda:
 decide:
 	@echo "Fase 2 (protocolo de evaluación): pendiente de incremento posterior."
 
-features:
-	@echo "Fase 3 (ingeniería de variables): pendiente de incremento posterior."
-
-train:
-	@echo "Fases 4-5 (baselines y modelos principales): pendiente de incremento posterior."
+features train:
+	python -m steg.data.clean
+	python -m nbconvert --to notebook --execute --inplace notebooks/02_modelado.ipynb --ExecutePreprocessor.timeout=-1
 
 evaluate:
 	@echo "Comparación de experimentos: pendiente de incremento posterior."

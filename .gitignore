@@ -52,3 +52,6 @@ contextPrompt.md
 # igual que en la branch `plane` de fastapi-harness-template.
 .mcp.json
 .env
+
+# Modelos entrenados: binarios regenerables desde notebooks/02_modelado.ipynb
+models/
