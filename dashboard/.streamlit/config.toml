@@ -1,0 +1,21 @@
+# Tema del dashboard: superficie, tinta y acento de la paleta validada (modo claro y oscuro).
+[theme]
+font = "sans-serif"
+
+[theme.light]
+primaryColor = "#2a78d6"
+backgroundColor = "#fcfcfb"
+secondaryBackgroundColor = "#f0efec"
+textColor = "#0b0b0b"
+
+[theme.dark]
+primaryColor = "#3987e5"
+backgroundColor = "#1a1a19"
+secondaryBackgroundColor = "#2c2c2a"
+textColor = "#f0efec"
+
+[client]
+toolbarMode = "minimal"
+
+[browser]
+gatherUsageStats = false

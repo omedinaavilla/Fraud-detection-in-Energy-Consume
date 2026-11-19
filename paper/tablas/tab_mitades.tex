@@ -1,0 +1,26 @@
+% Generado por paper/exportar_artefactos.py desde reports/tables/modeling_verificacion_mitades_historial.csv. No editar a mano.
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Verificación por mitades del historial: PR-AUC en validación cruzada sobre \textit{dev} con variables calculadas en cada mitad.}
+  \label{tab:mitades}
+  \begin{threeparttable}
+    \begin{tabular}{l l S[table-format=5.0] S[table-format=1.3] c c}
+      \toprule
+      {Historial} & {Variables de} & {Clientes} & {PR-AUC} & {IC 95\,\%} & {Diferencia con la primera mitad} \\
+      \midrule
+      Completo & Primera mitad & 74109 & 0.182 & {[0,172; 0,189]} & {---} \\
+      Completo & Segunda mitad & 74109 & 0.396 & {[0,381; 0,408]} & {0,213 [0,199; 0,227]} \\
+      Completo & Historial entero & 74109 & 0.375 & {[0,362; 0,388]} & {0,194 [0,181; 0,206]} \\
+      Censurado & Primera mitad & 64437 & 0.185 & {[0,173; 0,194]} & {---} \\
+      Censurado & Segunda mitad & 64437 & 0.217 & {[0,204; 0,225]} & {0,032 [0,022; 0,041]} \\
+      Censurado & Historial entero & 64437 & 0.226 & {[0,212; 0,235]} & {0,041 [0,032; 0,049]} \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \footnotesize
+      \item Clientes de \textit{dev} con al menos 16 facturas, para que cada mitad tenga 8 o más; se usan los mismos pliegues restringidos a esa población.
+      \item Fuente: \texttt{reports/tables/modeling\_verificacion\_mitades\_historial.csv}.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}

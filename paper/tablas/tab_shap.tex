@@ -1,0 +1,26 @@
+% Generado por paper/exportar_artefactos.py desde reports/tables/modeling_importancia_shap.csv. No editar a mano.
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Participación de cada familia de variables en la media del valor absoluto de SHAP del modelo final.}
+  \label{tab:shap}
+  \begin{threeparttable}
+    \begin{tabular}{l S[table-format=2.0] S[table-format=2.1] l}
+      \toprule
+      {Familia} & {Variables} & {Participación (\%)} & {Variable con mayor contribución} \\
+      \midrule
+      Tarifa y contador & 10 & 31.2 & \texttt{inv\_share\_codigo\_contador\_207} \\
+      Nivel de consumo & 8 & 19.6 & \texttt{inv\_elec\_log\_cons\_p90} \\
+      Dinámica del consumo & 8 & 18.2 & \texttt{inv\_elec\_pendiente\_log\_cons\_anual} \\
+      Regularidad de lectura & 9 & 13.9 & \texttt{inv\_share\_estado\_contador\_no\_cero} \\
+      Atributos del cliente & 3 & 9.6 & \texttt{cli\_region} \\
+      Relativas a pares & 4 & 7.4 & \texttt{rel\_elec\_cons\_vs\_catg} \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \footnotesize
+      \item SHAP calculado sobre 20.000 clientes de \textit{dev}; 42 entradas (38 variables por cliente y 4 relativas a pares).
+      \item Fuente: \texttt{reports/tables/modeling\_importancia\_shap.csv}.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}

@@ -1,0 +1,32 @@
+\section{Conclusiones}\label{sec:conclusiones}
+
+La introducción planteó una pregunta operativa: con una capacidad de inspección limitada, a
+qué clientes visitar primero. El historial de facturación permite responderla mejor que el
+azar y mejor que una regla basada en cuánto historial tiene cada cliente. En una campaña que
+visita al 1\,\% de los clientes, el modelo propuesto encuentra 118 fraudes donde la selección
+al azar encontraría 15 y la regla de exposición 57, y lo hace sobre clientes que no participaron
+en ninguna decisión del diseño.
+
+El aporte metodológico es la medición de cuánto desempeño procede de la propia inspección. En
+estos datos, el reemplazo del contador y los cambios de código y de tarifa se concentran al
+final del historial de los clientes con fraude, y un modelo que los ve alcanza cifras cercanas
+a las de la literatura. Al censurar el historial en el primer evento de ese tipo, la ventaja
+de la segunda mitad del historial sobre la primera cae de 0,213 a 0,032 de PR-AUC. La cifra
+que queda, un PR-AUC de 0,191 y un ROC-AUC de 0,762 en el conjunto de prueba, es la que cabe
+esperar al puntuar clientes aún no inspeccionados, y es la que debería guiar una decisión de
+uso.
+
+Los tres objetivos específicos se cumplieron. La caracterización de los datos identificó la
+longitud del historial como factor de confusión, con una tasa de fraude que se multiplica por
+15,2 entre el decil de clientes con menos facturas y el de más. La comparación de modelos, con
+pliegues agrupados por cliente, variables relativas ajustadas dentro de cada pliegue y un
+conjunto de prueba evaluado una sola vez, seleccionó LightGBM con hiperparámetros por defecto,
+indistinguible de XGBoost y mejor que la regresión logística. La evaluación práctica mostró una
+precisión del 43,5\,\% en la cabeza de la lista, probabilidades calibradas y una señal que se
+mantiene en los clientes sin eventos de equipo o de contrato.
+
+Para trasladar el método a las distribuidoras del Caribe colombiano, la condición más
+importante es de registro: conservar la fecha y el resultado de cada
+inspección, también de las que no encuentran fraude. Con esa información se puede separar el
+historial anterior a la detección del posterior, validar con un corte temporal y fijar el
+tamaño de la lista a partir de los costos reales de cada visita.

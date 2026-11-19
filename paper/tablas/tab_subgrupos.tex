@@ -1,0 +1,22 @@
+% Generado por paper/exportar_artefactos.py desde reports/tables/modeling_holdout_por_evento_equipo.csv. No editar a mano.
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Desempeño en el holdout según el cliente haya tenido o no un evento de equipo o de contrato.}
+  \label{tab:subgrupos}
+  \begin{threeparttable}
+    \begin{tabular}{l S[table-format=5.0] S[table-format=2.1] S[table-format=1.3] S[table-format=1.3] S[table-format=1.3] S[table-format=1.3]}
+      \toprule
+      {Grupo} & {Clientes} & {Prevalencia (\%)} & {\shortstack{ROC-AUC\\modelo}} & {\shortstack{ROC-AUC\\exposición}} & {\shortstack{PR-AUC\\modelo}} & {\shortstack{PR-AUC\\exposición}} \\
+      \midrule
+      Sin evento & 21562 & 2.0 & 0.758 & 0.733 & 0.086 & 0.048 \\
+      Con evento & 5537 & 19.3 & 0.689 & 0.633 & 0.365 & 0.270 \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \footnotesize
+      \item El grupo sin evento no tiene corte que delatar y da la medida más limpia de la señal de comportamiento.
+      \item Fuente: \texttt{reports/tables/modeling\_holdout\_por\_evento\_equipo.csv}.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}

@@ -1,0 +1,52 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[spanish,es-tabla,es-nodecimaldot,es-noquoting]{babel}
+\usepackage{microtype}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{threeparttable}
+\usepackage{siunitx}
+\sisetup{
+  output-decimal-marker = {,},
+  group-separator = {.},
+  group-minimum-digits = 4,
+}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{xcolor}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=authoryear,maxcitenames=2,uniquelist=false,giveninits=true]{biblatex}
+\addbibresource{referencias.bib}
+\usepackage[hidelinks]{hyperref}
+
+\graphicspath{{figuras/}}
+
+% Marca visible para todo lo que falta antes de entregar.
+\newcommand{\todo}[1]{\textcolor{red}{\textbf{[PENDIENTE: #1]}}}
+
+\title{Priorización de inspecciones de fraude eléctrico a partir del historial de
+  facturación: señal de comportamiento frente a huellas de la inspección}
+\author{Omar Medina \and Rubén Esguerra\\[4pt]
+  \small Seminario de investigación, Programa de Ciencia de Datos, Universidad del Norte}
+\date{Noviembre de 2026}
+
+\begin{document}
+
+\maketitle
+
+\input{secciones/00_resumen}
+\input{secciones/01_introduccion}
+\input{secciones/02_marco_teorico}
+\input{secciones/03_objetivos}
+\input{secciones/04_metodologia}
+\input{secciones/05_resultados}
+\input{secciones/06_discusion}
+\input{secciones/07_conclusiones}
+
+\printbibliography[title={Referencias}]
+
+\end{document}

@@ -1,0 +1,208 @@
+\section{Metodología}\label{sec:metodologia}
+
+El estudio es cuantitativo, observacional y retrospectivo, con datos secundarios y un diseño
+predictivo. La unidad de análisis es el cliente. Todo el proceso está en dos cuadernos
+reproducibles del repositorio del proyecto: \texttt{01\_eda.ipynb} para el análisis
+exploratorio y \texttt{02\_modelado.ipynb} para la construcción de variables, el
+entrenamiento y la evaluación.
+
+\subsection{Datos}
+
+Los datos proceden de STEG y se publicaron en la competencia de Zindi
+\parencite{zindi2019}. Se obtuvieron de un espejo público \parencite{kaggle_steg} y se
+aceptaron porque los hashes SHA-256 de los cuatro archivos coinciden con los registrados
+en el proyecto. La Tabla~\ref{tab:datos} resume su estructura. La tabla de clientes trae el
+distrito (4 valores), la categoría del cliente (3), la región (25), la fecha de alta y la
+etiqueta. Cada factura registra la fecha, el tipo de tarifa, el número, estado, código y
+coeficiente del contador, la nota de lectura, el consumo facturado en cuatro niveles, los
+índices anterior y nuevo, el número de meses facturados y el tipo de contador (electricidad
+o gas).
+
+\input{tablas/tab_datos}
+
+Del archivo de clientes de entrenamiento, 7.566 de 135.493 tienen fraude detectado
+(5,58\,\%), es decir, 16,9 clientes sin fraude por cada uno con fraude. La etiqueta no tiene
+fecha. Los códigos de tarifa, de contador y de nota de lectura carecen de diccionario en la
+fuente y el consumo no tiene unidad declarada, por lo que se tratan como categorías sin
+interpretar y como magnitud relativa.
+
+\subsection{Calidad y preparación de los datos}
+
+La auditoría de calidad aplicó un catálogo de verificaciones reproducible sobre los cuatro
+archivos. No hay valores faltantes en ninguna tabla. Las anomalías se marcaron con
+indicadores y no se corrigieron; solo se eliminaron las facturas exactamente duplicadas,
+que en el archivo de entrenamiento son 11.
+Las anomalías que el conteo no explicaba se investigaron una por una antes de decidir su
+tratamiento:
+
+\begin{itemize}
+  \item 17.768 de los 18.363 grupos de facturas con la misma clave lógica (cliente, fecha y
+    contador) difieren en consumo o en índices, así que no son copias. Se conservaron, porque
+    eliminarlas restaría consumo facturado.
+  \item 24.043 facturas tienen un número de meses fuera de $[1, 12]$. Entre 13 y 24 meses
+    puede tratarse de una regularización real; por encima de mil no admite lectura como
+    período. Se marcaron y el consumo mensual solo se calcula para períodos de 1 a 24 meses.
+  \item 81 facturas tienen el estado del contador y la nota de lectura desplazados de
+    columna en la captura original.
+  \item El número de contador se repite en 20.366 valores compartidos por varios clientes,
+    así que no identifica un equipo.
+  \item 8.748 clientes tienen una primera factura anterior a su fecha de alta, por lo que la
+    antigüedad se mide desde la primera factura observada.
+\end{itemize}
+
+Los consumos tienen colas extremas, pero la tasa de fraude crece con el consumo máximo del
+cliente a lo largo de casi todo su recorrido. Por eso no se truncaron ni se winsorizaron los
+valores altos, y el consumo se expresó en escala $\log(1 + x)$.
+
+El historial de facturas va de 1977 a 2019, pero lo anterior a 2005 es el 0,49\,\% de las
+facturas. Se fijó una ventana desde el 1 de enero de 2005 para que los clientes fueran
+comparables. Esa ventana deja sin ninguna factura a 7.129 clientes cuyo historial es
+anterior a 2005; se mantienen en la población con un indicador propio.
+
+\subsection{Análisis exploratorio}
+
+El análisis exploratorio se hizo solo sobre el conjunto de entrenamiento: distribuciones
+univariadas por grupos de variables, comportamiento temporal y relación de cada variable con
+la etiqueta. Las tasas de fraude por grupo se acompañan de intervalos de Wilson al 95\,\% y
+los tamaños de efecto de las variables numéricas se miden con la correlación rango-biserial.
+La relación entre la longitud del historial y la tasa de fraude se examinó recalculando cada
+efecto dentro de quintiles de número de facturas.
+
+\subsection{Partición y validación}
+
+El conjunto de prueba de Zindi no tiene etiqueta y no sirve para evaluar. Se separó el
+20\,\% de los clientes etiquetados, estratificado por la etiqueta y con semilla fija, como
+conjunto de prueba sellado (\textit{holdout}): 27.099 clientes que se evaluaron una sola
+vez, con el modelo ya elegido. El 80\,\% restante (\textit{dev}, 108.394 clientes con 6.053
+positivos) concentró todo el diseño de variables, las comparaciones y la búsqueda de
+hiperparámetros.
+
+Sobre \textit{dev} se usó validación cruzada estratificada y agrupada por cliente
+(\texttt{StratifiedGroupKFold}) de cinco pliegues, con los mismos pliegues para todos los
+modelos, lo que permite comparaciones pareadas. La validación se repitió con otras dos
+semillas de partición para medir cuánto depende la cifra del reparto concreto de clientes.
+
+Las variables relativas a pares, la codificación y la transformación de la regresión
+logística, y la parada temprana del boosting se ajustan dentro de cada pliegue. La parada
+temprana usa un 10\,\% estratificado del pliegue de entrenamiento y nunca el pliegue que se
+evalúa. Una validación adversarial, que intenta distinguir con las variables a los clientes
+del archivo de entrenamiento de los del archivo de prueba, obtuvo un ROC-AUC de 0,4986: las
+variables se calculan y se distribuyen igual en ambos.
+
+\subsection{Censura del historial en el primer evento de equipo o de contrato}
+
+Antes de fijar la representación del historial se verificó si contenía huellas de la
+inspección. Se consideraron tres eventos sobre un mismo contador: reemplazo del contador,
+cambio de código de contador y cambio de tarifa. Se midió la tasa de fraude con y sin
+evento, la posición relativa del evento dentro del historial y cuánto historial queda tras
+él. Para contrastar H1 se construyeron las mismas variables con la primera y con la segunda
+mitad del historial de cada cliente con al menos 16 facturas, y se compararon sus PR-AUC.
+
+Con esa evidencia (Sección~\ref{sec:res-huellas}) el modelo principal usa el historial
+\emph{censurado}: cada cliente conserva solo las facturas anteriores a su primer evento de
+equipo o de contrato. La regla no usa la etiqueta, se aplica igual a todos los clientes y
+puede aplicarse en el momento de puntuar.
+
+La censura no basta si alguna variable revela \emph{cuándo} se cortó el historial. Varias
+magnitudes cambian con el calendario en toda la base, como la codificación de las notas de
+lectura o la fracción de consumo en los niveles superiores, de modo que un historial cortado
+en un año temprano tiene otro perfil. Las variables con esa deriva se agruparon en dos
+conjuntos. El grupo A (notas de lectura y fracción del consumo en niveles superiores) se
+retiró, y el grupo B (intervalos largos entre lecturas, estado del contador y códigos de
+contador) se conservó, según una regla que retira cada grupo salvo que hacerlo cueste más de
+0,005 de ROC-AUC dentro de los clientes sin evento. Esa regla se fijó después de una primera
+revisión de fuga, y por eso el modelo sin el grupo B se evalúa también en el conjunto de
+prueba como control de sensibilidad.
+
+\subsection{Construcción de variables}
+
+Las variables se calculan por cliente y solo con sus propias facturas, salvo las relativas a
+pares, que se ajustan dentro del pliegue. Las de consumo e intervalos se calculan por
+separado para electricidad y gas, porque el 45\,\% de los clientes tiene ambos tipos de
+contador, con magnitudes de consumo distintas. Se agrupan en familias:
+
+\begin{itemize}
+  \item \textbf{Atributos del cliente} (3): región, distrito y categoría, como categorías
+    nativas.
+  \item \textbf{Nivel de consumo} (8): mediana del log-consumo mensual en las últimas 12
+    lecturas, percentil 90, desviación y proporción de lecturas con consumo cero.
+  \item \textbf{Dinámica del consumo} (8): pendiente anual del log-consumo, cambio de las
+    últimas cuatro lecturas frente a las anteriores y proporción de caídas y subidas fuertes.
+  \item \textbf{Regularidad de lectura} (9): intervalos entre lecturas y proporciones de
+    facturas con índice que retrocede, duplicado lógico, período anómalo, estado del
+    contador distinto de cero e índice inconsistente con el consumo facturado.
+  \item \textbf{Tarifa y contador} (10): proporción de facturas de gas y de cada tarifa y
+    código de contador frecuente.
+  \item \textbf{Relativas a pares} (4): consumo del cliente frente a la mediana de su región
+    y de su categoría en el pliegue de entrenamiento.
+\end{itemize}
+
+Las proporciones sustituyen a los conteos para que ninguna variable de comportamiento crezca
+con la longitud del historial. De las variables candidatas se retiró una por redundancia
+($|\rho| > 0{,}95$ de Spearman con otra), además de las del grupo A y de la tasa de cambio de
+contador. El modelo final usa 38 variables por cliente y las 4 relativas a pares.
+
+Aparte se construyó una familia de \textbf{exposición} con siete variables: número de
+facturas, extensión del historial, antigüedad desde el alta, índice máximo acumulado e
+indicadores de primera factura anterior al alta, de historial con menos de 12 facturas y de
+ausencia de facturas desde 2005. Estas variables miden oportunidades de
+inspección más que propensión a defraudar, así que no entran al modelo principal y se usan
+como línea base y como control.
+
+\subsection{Modelos comparados}
+
+\begin{itemize}
+  \item \textbf{Prevalencia}: probabilidad constante, equivalente a elegir al azar.
+  \item \textbf{Solo exposición}: LightGBM entrenado únicamente con la familia de exposición.
+    Representa una regla simple que prioriza a los clientes con más historial.
+  \item \textbf{Regresión logística} con regularización L2, codificación \textit{one-hot} y
+    transformación por cuantiles ajustadas en el pliegue.
+  \item \textbf{LightGBM} con hiperparámetros conservadores (tasa de aprendizaje 0,03, 31
+    hojas, 50 clientes mínimos por hoja, submuestreo de filas y columnas) y número de árboles
+    fijado por parada temprana \parencite{ke2017}.
+  \item \textbf{XGBoost} con una configuración análoga y la misma parada temprana
+    \parencite{chen2016}.
+  \item \textbf{LightGBM ponderado}, con pesos de clase, como experimento controlado del
+    desbalance. No se usó remuestreo.
+  \item \textbf{LightGBM con Optuna}: 40 ensayos de búsqueda de hiperparámetros con el
+    algoritmo TPE \parencite{akiba2019}, sobre una partición interna de \textit{dev}.
+\end{itemize}
+
+Como controles, que no compiten en la selección, se entrenaron el mismo LightGBM sobre el
+historial completo y LightGBM con las variables de comportamiento más las de exposición.
+
+La regla de selección se fijó antes de comparar: el mejor modelo es el de mayor PR-AUC fuera
+de pliegue, y otro solo se considera peor si el intervalo bootstrap al 95\,\% de la
+diferencia excluye el cero y además es peor en al menos 4 de los 5 pliegues. Entre los
+indistinguibles se elige el más simple, en el orden regresión logística, LightGBM por
+defecto, XGBoost, LightGBM ponderado y LightGBM con búsqueda de hiperparámetros.
+
+\subsection{Métricas y análisis de control}
+
+La métrica principal es el PR-AUC. Se reportan siempre el ROC-AUC, la puntuación de Brier y
+la curva de precisión, recall y lift en listas del 0,5, 1, 2, 5 y 10\,\% de los clientes,
+porque la capacidad de inspección de la empresa no se conoce. Las diferencias entre modelos
+se evalúan con bootstrap pareado por cliente sobre las predicciones fuera de pliegue, y los
+intervalos del conjunto de prueba con 1.000 réplicas bootstrap de clientes.
+
+Para separar la señal de comportamiento de la exposición se usan cuatro controles: la
+correlación de Spearman entre la puntuación y el número de facturas, el ROC-AUC dentro de
+cada quintil de longitud del historial, el desempeño en la población con facturas desde
+2005 y el desempeño dentro de los clientes con y sin evento de equipo o de contrato. En el
+grupo sin evento no hay corte que delatar, de modo que es la medida más limpia de la señal.
+
+\subsection{Interpretabilidad}
+
+El modelo final se reentrenó con todo \textit{dev}. Sus valores SHAP exactos de árbol se
+calcularon sobre una muestra de 20.000 clientes de \textit{dev} \parencite{lundberg2020}.
+Esos clientes forman parte del entrenamiento, así que los valores describen qué variables
+usa el modelo y no cuánto rinde fuera de muestra.
+
+\subsection{Herramientas y consideraciones éticas}
+
+El análisis se hizo en Python con pandas, scikit-learn \parencite{pedregosa2011}, LightGBM,
+XGBoost, Optuna y SHAP, con semillas fijas y versiones registradas en el archivo de
+configuración del proyecto. Los datos son públicos y están anonimizados: no contienen
+nombres, direcciones ni otra información personal. La puntuación del modelo se interpreta
+como la probabilidad de que una inspección confirme fraude y sirve para ordenar visitas;
+no constituye una acusación contra el cliente.

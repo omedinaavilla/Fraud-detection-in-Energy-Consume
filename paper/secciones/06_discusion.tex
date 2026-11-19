@@ -1,0 +1,72 @@
+\section{Discusión}\label{sec:discusion}
+
+\subsection{Comparación con la literatura}
+
+El modelo seleccionado rinde por debajo de las cifras publicadas sobre estos datos: un
+ROC-AUC de 0,762 en el conjunto de prueba frente al 0,997 de \textcite{oprea2022} y al
+liderato cercano a 0,86 de la competencia de Zindi. La diferencia se explica en buena parte
+por lo que mide cada cifra. El control entrenado con el historial completo, con el mismo
+algoritmo y las mismas precauciones de partición, alcanza en el conjunto de prueba un ROC-AUC
+de 0,879 y una precisión del 60,1\,\% en el 1\,\% superior de la lista, una cifra cercana a
+la del liderato. La verificación por mitades muestra de dónde sale esa ventaja: la
+segunda mitad del historial, la que contiene lo ocurrido después de la detección, rinde más
+del doble que la primera. Esa parte del desempeño no existiría al puntuar clientes que
+todavía no han sido inspeccionados.
+
+En el caso de \textcite{oprea2022} se suma una segunda fuente probable de optimismo, porque
+las variables de ventana se calcularon sobre el conjunto completo antes de partirlo. Con los
+datos disponibles no es posible separar cuánto de su 0,997 corresponde a cada mecanismo,
+pero la combinación de un único corte aleatorio con variables calculadas sobre todos los
+clientes impide tomar esa cifra como referencia.
+
+El hallazgo coincide con el de \textcite{comapuig2022} en datos de otra empresa y otro país:
+un clasificador entrenado con etiquetas de inspección termina aprendiendo el proceso de
+inspección. Los datos de STEG no traen un historial explícito de visitas; aquí la huella
+apareció en cambios administrativos del contador y del contrato, que se registran como
+cualquier otra factura. La consecuencia práctica es la misma: sin un control específico,
+la validación cruzada premia al modelo que mejor reconoce a los clientes ya inspeccionados.
+
+\subsection{Qué aprendió el modelo}
+
+La variable con mayor contribución es la proporción de facturas con código de contador 207.
+Es también la que más dudas plantea, porque ese código gana presencia en la segunda mitad del
+historial de los clientes con fraude y se asocia con equipos más recientes. Tras la censura,
+las variables del modelo todavía permiten predecir si el cliente tendrá un evento de equipo o
+de contrato con un ROC-AUC de 0,871. Parte de la señal, por tanto, puede seguir anticipando
+la inspección en lugar del fraude. El resultado en el grupo sin eventos acota ese riesgo: allí
+no hay corte que delatar y el modelo mantiene un ROC-AUC de 0,758 en el conjunto de prueba,
+por encima de la línea base de exposición.
+
+El nivel y la dinámica del consumo suman el 37,8\,\% de la contribución. El percentil 90 del
+consumo eléctrico, la pendiente anual y la proporción de caídas fuertes son variables que
+una empresa puede auditar con su propio conocimiento del fraude, algo que no ocurre con un
+modelo cuya señal principal fuera la antigüedad del cliente.
+
+\subsection{Limitaciones}
+
+La etiqueta registra fraude detectado y no tiene fecha. Un fraude cometido y nunca
+inspeccionado figura como negativo, así que todas las métricas miden la capacidad de
+anticipar qué inspección confirmará fraude y no la de detectar fraude cometido. Por la misma
+razón no fue posible construir un corte temporal entre historial y etiqueta.
+
+La partición de Zindi es aleatoria por cliente y no cronológica. El desempeño reportado no
+mide la capacidad del modelo de generalizar a fraude futuro, que es lo que exigiría su uso en
+una campaña real.
+
+La censura es incompleta. Una inspección que confirma fraude sin cambiar el equipo ni el
+contrato no deja evento que censurar. Entre las mitades del historial censurado persiste una
+diferencia de 0,032 de PR-AUC (IC 95\,\% [0,022; 0,041]), compatible con la mayor relevancia de
+lo reciente pero que no descarta un efecto residual de la inspección. La regla que decidió
+qué variables con deriva de calendario se retiraban se fijó después de ver una versión
+anterior de los resultados; por eso se evaluó el modelo sin el grupo B como control, y su
+PR-AUC de 0,174 en el conjunto de prueba sigue por encima de la línea base de exposición.
+
+Los datos son de Túnez. Los códigos de tarifa y de contador no tienen diccionario y el
+consumo no tiene unidad, de modo que las variables más importantes no pueden interpretarse
+en términos físicos ni trasladarse sin más a otra empresa. Aplicar el método en Colombia
+requiere datos de las comercializadoras con la fecha y el resultado de cada inspección.
+
+No se dispuso de costos de inspección ni del valor de la energía recuperada, así que no se
+fijó un punto de operación ni se calculó el beneficio neto de cada tamaño de lista. La curva
+de la Tabla~\ref{tab:curva-k} es el insumo para ese análisis, que queda pendiente de los
+parámetros de costo de la empresa.

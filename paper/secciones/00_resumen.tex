@@ -1,0 +1,28 @@
+\begin{abstract}
+\noindent\textbf{Introducción.} Las pérdidas no técnicas de energía se combaten con
+inspecciones de campo de capacidad limitada, de modo que el problema práctico es decidir a
+quién inspeccionar primero. La literatura reporta desempeños muy altos sin controlar que la
+etiqueta registra fraude detectado y no fraude cometido.
+\textbf{Objetivo.} Desarrollar un modelo de clasificación que ordene a los clientes según su
+probabilidad de fraude a partir de su historial de facturación y sus atributos, para
+priorizar inspecciones.
+\textbf{Métodos.} Se usaron los datos públicos de la empresa tunecina STEG: 135.493 clientes
+y 4.476.749 facturas, con 5,58\,\% de fraude detectado. El 20\,\% de los clientes se reservó
+como conjunto de prueba evaluado una sola vez, y sobre el resto se aplicó validación cruzada
+de cinco pliegues estratificada y agrupada por cliente. El historial de cada cliente se
+censuró en su primer reemplazo de contador o cambio de código o de tarifa, por ser huella de
+la inspección. Se compararon regresión logística, LightGBM y XGBoost con PR-AUC, ROC-AUC y
+precisión en listas de tamaño fijo.
+\textbf{Resultados.} Con el historial completo, las variables de su segunda mitad alcanzaron
+un PR-AUC de 0,396 frente a 0,182 de la primera; con el historial censurado la diferencia
+bajó a 0,032. El modelo seleccionado, LightGBM, obtuvo en el conjunto de prueba un PR-AUC de
+0,191 (IC 95\,\% [0,174; 0,211]) y un ROC-AUC de 0,762, frente a 0,132 y 0,745 de una línea
+base de exposición. En una lista del 1\,\% de los clientes encontró 118 fraudes, frente a 57
+de esa línea base y 15 esperados al azar.
+\textbf{Conclusiones.} El historial de facturación permite priorizar inspecciones con una
+precisión 7,8 veces superior al azar. Evaluar sin retirar las huellas de la inspección
+sobrestima el desempeño que un modelo tendría con clientes aún no inspeccionados.
+
+\medskip\noindent\textbf{Palabras clave:} pérdidas no técnicas; detección de fraude;
+priorización de inspecciones; fuga de información; \textit{gradient boosting}.
+\end{abstract}
