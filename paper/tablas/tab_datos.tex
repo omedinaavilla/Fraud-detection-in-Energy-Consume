@@ -1,0 +1,24 @@
+% Generado por paper/exportar_artefactos.py desde reports/EDA/00_data_audit.md. No editar a mano.
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Archivos del conjunto de datos de STEG publicados en el reto de Zindi.}
+  \label{tab:datos}
+  \begin{threeparttable}
+    \begin{tabular}{l S[table-format=7.0] S[table-format=2.0] l}
+      \toprule
+      {Archivo} & {Filas} & {Columnas} & {Unidad de observación} \\
+      \midrule
+      \texttt{client\_train} & 135493 & 6 & un cliente con etiqueta \\
+      \texttt{client\_test} & 58069 & 5 & un cliente sin etiqueta \\
+      \texttt{invoice\_train} & 4476749 & 16 & una factura de un cliente de train \\
+      \texttt{invoice\_test} & 1939730 & 16 & una factura de un cliente de test \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \footnotesize
+      \item Solo \texttt{client\_train} trae la etiqueta; \texttt{client\_test} se usa para la validación adversarial.
+      \item Fuente: \texttt{reports/EDA/00\_data\_audit.md}.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}

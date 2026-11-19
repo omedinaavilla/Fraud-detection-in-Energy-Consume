@@ -1,0 +1,40 @@
+\section{Introducción}\label{sec:introduccion}
+
+Una parte de la energía que entregan las empresas distribuidoras se consume sin pagarse.
+Son las pérdidas no técnicas: conexiones directas a la red, medidores manipulados y lecturas
+o registros alterados \parencite{glauner2017}. A diferencia de las pérdidas técnicas, que se
+disipan en el transporte, estas tienen un origen identificable en el cliente, y su costo
+termina recayendo sobre los usuarios que sí pagan.
+
+En Colombia el problema se concentra en la región Caribe, que en junio de 2024 representó
+el 28,5\,\% de la demanda nacional de energía eléctrica, según datos de XM
+\parencite{elheraldo2024}. En los barrios eléctricamente subnormales que atiende Afinia, la
+empresa recauda apenas el 5\,\% de lo que factura, lo que equivale a pérdidas superiores a
+300.000 millones de pesos al año \parencite{portafolio2025}. En Air-e, el recaudo acumulado
+de 2025 fue del 74,55\,\%, frente a un promedio nacional del 95\,\% \parencite{elheraldo2025}.
+Las cifras de recaudo mezclan el fraude con la simple falta de pago, pero dan una idea de la
+escala del problema en las distribuidoras de la región.
+
+La respuesta habitual de las empresas es la inspección en campo. Cada visita tiene un costo
+y la capacidad de inspección es finita, así que la pregunta operativa es a quién visitar
+primero. Por eso el problema se plantea aquí como una tarea de
+clasificación orientada a la priorización: ordenar a los clientes según su probabilidad de
+fraude a partir de la única información que la empresa tiene de todos ellos, el historial
+de facturación y los atributos del contrato.
+
+Ese planteamiento choca con una dificultad que la literatura suele pasar por alto. La
+etiqueta de fraude solo existe para los clientes que fueron inspeccionados y en los que se
+confirmó el fraude, de modo que mide fraude \emph{detectado}. Un cliente con un historial
+largo ha tenido más ocasiones de ser inspeccionado, y una inspección exitosa deja rastros en
+el propio historial, como el reemplazo del contador. Un modelo puede aprender esos rastros y
+obtener cifras altas en validación sin capacidad real de anticipar el fraude en clientes que
+todavía no han sido visitados, que es justamente el uso para el que se construye.
+
+El estudio usa los datos públicos de la Société Tunisienne de l'Électricité et du Gaz
+(STEG), liberados en una competencia de la plataforma Zindi \parencite{zindi2019}. Es uno de
+los pocos conjuntos abiertos con etiqueta de fraude por cliente y con el historial de
+facturación de contadores convencionales, la misma información disponible para las
+distribuidoras que no cuentan con medición inteligente. El aporte que se busca tiene dos
+partes: un modelo que priorice inspecciones con una mejora medible sobre el azar y sobre una
+regla de exposición, y una evaluación que separe la señal de comportamiento del cliente de
+la huella que deja la inspección.

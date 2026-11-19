@@ -1,0 +1,96 @@
+\section{Antecedentes y marco teórico}\label{sec:marco}
+
+\subsection{Detección supervisada de pérdidas no técnicas}
+
+La detección de fraude eléctrico con aprendizaje automático tiene unos quince años de
+desarrollo. \textcite{nagi2010} sustituyeron la selección de clientes por reglas manuales con
+un clasificador de máquinas de vectores de soporte entrenado sobre perfiles de consumo, en
+una distribuidora de Malasia. \textcite{comapuig2016} trabajaron con boosting de gradiente
+sobre clientes de una empresa española y evaluaron el modelo por campañas de inspección, es
+decir, por cuántos fraudes encuentra cada lista que se entrega a los técnicos. En Ecuador,
+\textcite{ariasmarin2025} compararon varios clasificadores sobre los datos de una
+distribuidora y obtuvieron el mejor resultado con boosting (CatBoost, exactitud de 0,897 y
+F1 de 0,894), aunque midieron el desempeño sobre una base de 27.374 registros balanceada
+artificialmente entre casos con y sin fraude.
+
+Sobre los mismos datos de STEG que usa este trabajo, \textcite{oprea2022} construyeron
+cerca de doscientas variables con funciones analíticas de ventana sobre el historial de
+facturas y redujeron el conjunto a quince por puntaje de Fisher. En su escenario de
+referencia el mejor AUC fue 0,7331; con la ingeniería de variables propuesta reportan un
+AUC de 0,997 para un árbol de decisión. El salto no tiene explicación en el texto, las
+variables de ventana se calculan sobre el conjunto completo antes de separar entrenamiento y
+prueba, la evaluación descansa en un único corte aleatorio y las quince variables finales no
+se nombran. Esas cifras no pueden tomarse como referencia de lo alcanzable. La propia
+competencia de Zindi, evaluada con AUC, tuvo un liderato público cercano a 0,86, bajo un
+protocolo distinto y sin documentación metodológica publicada por los participantes.
+
+\subsection{La etiqueta depende de la inspección}
+
+En estos conjuntos de datos la etiqueta positiva proviene de una inspección que confirmó el
+fraude. \textcite{comapuig2022} hacen de esa procedencia el eje de su trabajo con los datos
+de Naturgy: las campañas se dirigen a quien ya parece sospechoso, por lo que el conjunto
+etiquetado no representa a la población que se va a puntuar. Documentan un clasificador cuyas
+ocho variables más influyentes eran casi todas historial de visitas, es decir, un modelo que
+había aprendido el proceso de inspección. \textcite{glauner2016} señalan el mismo sesgo y su
+interacción con el desbalance de clases.
+
+De ahí se derivan dos mecanismos que este trabajo mide en sus propios datos. El primero es
+la exposición: un cliente con más historial ha tenido más oportunidades de ser
+inspeccionado y, por tanto, de ser etiquetado como fraude. El segundo es la huella: si la
+inspección confirma el fraude, la empresa reemplaza el contador o modifica el contrato, y esos
+cambios quedan en el historial que luego se usa para construir variables.
+
+\subsection{Fuga de información}
+
+Hay fuga cuando el modelo se entrena con información que no estaría disponible en el momento
+de predecir \parencite{kaufman2012}. En este problema aparece de dos formas. Una es
+procedimental: calcular estadísticos que comparan a un cliente con otros, o escalar y
+codificar, usando también los clientes de prueba antes de partir, que es el patrón observado
+en \textcite{oprea2022}. La otra es temporal. Como la etiqueta no tiene fecha, cualquier
+variable calculada sobre el historial completo puede incluir lo ocurrido después de la
+detección, que no existe cuando se puntúa a un cliente todavía no inspeccionado.
+
+\subsection{Métricas para una lista de inspección}
+
+Con una clase minoritaria del 5,58\,\%, un clasificador que nunca predice fraude acierta el
+94,42\,\% de las veces, por lo que la exactitud no informa nada. El ROC-AUC mide la
+separación global entre clases y no depende de la prevalencia, lo que lo hace adecuado para
+comparar subgrupos con tasas de fraude distintas. El PR-AUC, calculado como precisión media,
+concentra su peso en la parte alta del ordenamiento, que es donde opera una lista de
+inspección, y su valor de referencia al azar es la prevalencia \parencite{saito2015}.
+
+Para una lista con los $k$ clientes de mayor puntuación, con $P$ positivos en la población
+y $N$ clientes en total, se usan
+\begin{equation}
+  \text{precisión@}k = \frac{\text{TP}_k}{k}, \qquad
+  \text{recall@}k = \frac{\text{TP}_k}{P}, \qquad
+  \text{lift@}k = \frac{\text{precisión@}k}{P/N},
+\end{equation}
+donde $\text{TP}_k$ es el número de fraudes dentro de la lista. Una lista de tamaño $k < P$
+no puede recuperar todos los fraudes, así que el recall@$k$ se compara con su techo
+$\min(k, P)/P$ y no con la unidad.
+
+\subsection{Modelos e interpretabilidad}
+
+Los modelos de boosting de gradiente sobre árboles combinan de forma aditiva árboles poco
+profundos, cada uno ajustado al error de los anteriores. LightGBM \parencite{ke2017} y XGBoost
+\parencite{chen2016} son sus implementaciones más usadas en datos tabulares; ambas toleran
+valores faltantes sin imputar y admiten variables categóricas de forma nativa, dos
+propiedades relevantes cuando muchos clientes no tienen contador de gas o tienen historiales
+cortos. La regresión logística con regularización L2 sirve como referencia lineal.
+
+Para interpretar el modelo se usan los valores SHAP, que reparten la predicción de cada
+cliente entre sus variables de forma aditiva \parencite{lundberg2017}; en modelos de árboles
+pueden calcularse de manera exacta \parencite{lundberg2020}. Los intervalos de confianza de
+las métricas se obtienen por bootstrap \parencite{efron1979} remuestreando clientes, y los de
+proporciones del análisis exploratorio con el método de \textcite{wilson1927}.
+
+\subsection{Vacío que aborda este trabajo}
+
+Las técnicas de clasificación avanzaron desde las máquinas de vectores de soporte hasta el
+boosting, pero los trabajos revisados rara vez evalúan con la distribución real de clases,
+no verifican si la etiqueta depende de la inspección y, en el único antecedente publicado
+sobre estos datos, no controlan la fuga. Ninguno separa la parte del desempeño que procede
+del comportamiento del cliente de la que procede del rastro de la inspección. Este trabajo
+mide esa separación sobre los datos de STEG y evalúa el modelo como se usaría: en listas de
+tamaño fijo y frente a referencias simples.

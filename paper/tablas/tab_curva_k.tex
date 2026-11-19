@@ -1,0 +1,26 @@
+% Generado por paper/exportar_artefactos.py desde reports/tables/modeling_holdout_curva_k.csv y modeling_holdout_metricas.csv. No editar a mano.
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Fraudes encontrados en el holdout según el tamaño de la lista de inspección.}
+  \label{tab:curva-k}
+  \begin{threeparttable}
+    \begin{tabular}{l S[table-format=4.0] S[table-format=3.0] S[table-format=3.0] S[table-format=3.0] S[table-format=2.1] S[table-format=2.1] S[table-format=3.1]}
+      \toprule
+      {Lista} & {$k$} & {Azar} & {\shortstack{Regla de\\exposición}} & {Modelo} & {\shortstack{Precisión\\(\%)}} & {\shortstack{Recall\\(\%)}} & {\shortstack{Techo de\\recall (\%)}} \\
+      \midrule
+      0,5\,\% & 135 & 8 & 28 & 55 & 40.7 & 3.6 & 8.9 \\
+      1,0\,\% & 271 & 15 & 57 & 118 & 43.5 & 7.8 & 17.9 \\
+      2,0\,\% & 542 & 30 & 117 & 192 & 35.4 & 12.7 & 35.8 \\
+      5,0\,\% & 1355 & 76 & 234 & 352 & 26.0 & 23.3 & 89.6 \\
+      10,0\,\% & 2710 & 151 & 404 & 521 & 19.2 & 34.4 & 100.0 \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \footnotesize
+      \item Azar: prevalencia por $k$. Regla de exposición y modelo: precisión@$k$ por $k$. Precisión, recall y techo corresponden al modelo seleccionado.
+      \item Techo de recall: $\min(k, P)/P$, con $P$ = 1.513 positivos del holdout.
+      \item Fuente: \texttt{reports/tables/modeling\_holdout\_curva\_k.csv y modeling\_holdout\_metricas.csv}.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}

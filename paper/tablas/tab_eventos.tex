@@ -1,0 +1,24 @@
+% Generado por paper/exportar_artefactos.py desde reports/tables/modeling_diagnostico_eventos_equipo.csv. No editar a mano.
+\begin{table}[htbp]
+  \centering
+  \small
+  \caption{Eventos de equipo y de contrato en el historial de los clientes de \textit{dev}.}
+  \label{tab:eventos}
+  \begin{threeparttable}
+    \begin{tabular}{l S[table-format=5.0] S[table-format=2.1] S[table-format=1.1] S[table-format=1.2] S[table-format=1.2]}
+      \toprule
+      {Evento} & {Clientes} & {\shortstack{Fraude con\\evento (\%)}} & {\shortstack{Fraude sin\\evento (\%)}} & {\shortstack{Posición\\(fraude)}} & {\shortstack{Posición\\(sin fraude)}} \\
+      \midrule
+      Reemplazo de contador & 19163 & 18.1 & 2.9 & 0.70 & 0.41 \\
+      Cambio de código de contador & 4285 & 26.9 & 4.7 & 0.69 & 0.52 \\
+      Cambio de tarifa & 1612 & 17.2 & 5.4 & 0.59 & 0.60 \\
+      Cualquiera de los tres & 22217 & 18.7 & 2.2 & 0.69 & 0.47 \\
+      \bottomrule
+    \end{tabular}
+    \begin{tablenotes}
+      \footnotesize
+      \item Posición: ubicación relativa mediana del evento dentro del historial del cliente (0 = primera factura, 1 = última).
+      \item Fuente: \texttt{reports/tables/modeling\_diagnostico\_eventos\_equipo.csv}.
+    \end{tablenotes}
+  \end{threeparttable}
+\end{table}

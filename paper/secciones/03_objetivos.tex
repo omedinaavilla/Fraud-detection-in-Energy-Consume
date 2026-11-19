@@ -1,0 +1,43 @@
+\section{Objetivos, pregunta guía e hipótesis}\label{sec:objetivos}
+
+\subsection{Objetivo general}
+
+Desarrollar un modelo de clasificación que identifique a los clientes de STEG con mayor
+probabilidad de fraude detectado, a partir de su historial de facturación entre 2005 y 2019
+y de sus atributos, para priorizar las inspecciones de campo.
+
+\subsection{Objetivos específicos}
+
+\begin{enumerate}
+  \item Caracterizar los datos de clientes y facturas en cuanto a su calidad, el desbalance
+    de clases y la relación entre la longitud del historial y la tasa de fraude.
+  \item Construir variables por cliente y comparar modelos de clasificación con una
+    validación cruzada agrupada por cliente y un conjunto de prueba sellado, de forma que no
+    haya fuga de información.
+  \item Evaluar el modelo seleccionado como se usaría en la práctica, midiendo cuántos
+    fraudes encuentra una lista de inspección de tamaño fijo frente al azar y frente a una
+    línea base de exposición, e interpretar qué variables pesan más en sus predicciones.
+\end{enumerate}
+
+\subsection{Pregunta guía}
+
+¿Permite el historial de facturación ordenar a los clientes según su probabilidad de fraude
+detectado mejor que el azar y que una referencia basada solo en la exposición a inspección,
+una vez se retiran del historial las huellas que deja la propia inspección?
+
+\subsection{Hipótesis}
+
+\begin{description}
+  \item[H1.] Una parte del desempeño que se obtiene con el historial completo procede de
+    registros posteriores a la detección. Si es así, las variables calculadas sobre la
+    segunda mitad del historial rinden claramente más que las de la primera, y esa
+    diferencia se reduce al censurar el historial en el primer evento de equipo o de
+    contrato.
+  \item[H2.] Con el historial censurado, un modelo de boosting sobre variables de
+    comportamiento concentra más fraudes en la cabeza de la lista que la línea base de
+    exposición, y conserva capacidad de ordenamiento dentro de los clientes que no tuvieron
+    ningún evento de equipo o de contrato.
+\end{description}
+
+La verificación de H1 quedó registrada como propuesta en la bitácora de decisiones del
+proyecto al cerrar el análisis exploratorio, antes de entrenar cualquier modelo.
